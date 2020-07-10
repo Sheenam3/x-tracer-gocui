@@ -9,10 +9,10 @@ import (
 	"io"
 	"strings"
 	"time"
-	pb "github.com/sheenam3/x-tracer/api"
+	pb "github.com/Sheenam3/x-tracer-gocui/api"
 //	"github.com/sheenam3/x-tracer/pkg/streamserver"
-	"github.com/sheenam3/x-tracer/internal/agentmanager"
-	"github.com/sheenam3/x-tracer/k8s"
+	"github.com/Sheenam3/x-tracer-gocui/internal/agentmanager"
+
 	"github.com/jroimartin/gocui"
 
 )
@@ -30,7 +30,7 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 var version = "master"
 var LOG_MOD string = "pod"
 var NAMESPACE string = "default"
-var G *gocui.Gui
+
 
 // Configure globale keys
 var keys []Key = []Key{
@@ -92,12 +92,6 @@ func InitGui() {
 
 
 
-
-func GetView() *gocui.Gui {
-
-return G
-
-}
 
 // Define the UI layout
 func uiLayout(g *gocui.Gui) error {
@@ -273,7 +267,7 @@ func showViewPodsLogs(g *gocui.Gui) error {
 		fmt.Fprintln(lv, "Pod you choose is: " + p)
 
 		startAgent(g,p,lv)
-		k8s.StartServer()
+		
 		
 		// Display logs
 		//refreshPodsLogs(g)
@@ -422,17 +416,5 @@ func startAgent(g *gocui.Gui, p string, o io.Writer) error {
 	return nil
 }
 
-
-/*func startServer() error {
-	server := streamserver.New("6666")
-	server.StartServer()
-
-	for {
-		log.Println("From x-tracer- Sleeping")
-		time.Sleep(10 * time.Second)
-	}
-	return nil
-
-}*/
 
 

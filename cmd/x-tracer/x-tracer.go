@@ -2,7 +2,10 @@ package main
 
 import (
 
-	"github.com/sheenam3/x-tracer/ui"
+        "github.com/Sheenam3/x-tracer-gocui/ui"
+        "github.com/Sheenam3/x-tracer-gocui/pkg/streamserver"
+        "log"
+        "time"
 
 )
 
@@ -10,6 +13,18 @@ import (
 
 func main() {
 
-	ui.InitGui()
+
+        server := streamserver.New("6666")
+        go server.StartServer()
+
+
+        ui.InitGui()
+
+        for {
+                log.Println("From x-tracer- Sleeping")
+                time.Sleep(10 * time.Second)
+        }
+
 
 }
+

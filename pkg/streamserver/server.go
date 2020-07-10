@@ -3,12 +3,12 @@ package streamserver
 import (
 	"strings"
 	"fmt"
-	pb "github.com/sheenam3/x-tracer/api"
+	pb "github.com/Sheenam3/x-tracer-gocui/api"
 	"google.golang.org/grpc"
 	"io"
 	"log"
 	"net"
-	"github.com/sheenam3/x-tracer/ui"
+
 	)
 
 
@@ -30,13 +30,6 @@ func (s *StreamServer) RouteLog(stream pb.SentLog_RouteLogServer) error {
 //		fmt.Println("\n", r.Log)
 
 	        parse := strings.Fields(string(r.Log))
-		g := ui.GetView()
-		vn := "logs"
-		l, err := g.View(vn)
-		if err != nil {
-			return err
-		}
-		l.Clear()
 
 //		fmt.Println("PID:",r.Pid)
 		if r.ProbeName == "tcptracer"{

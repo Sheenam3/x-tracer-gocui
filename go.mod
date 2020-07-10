@@ -1,4 +1,4 @@
-module github.com/sheenam3/x-tracer
+module github.com/Sheenam3/x-tracer-gocui
 
 go 1.12
 
