@@ -3,9 +3,11 @@ module github.com/Sheenam3/x-tracer-gocui
 go 1.12
 
 require (
+	github.com/ITRI-ICL-Peregrine/x-tracer v0.0.0-20200618024350-5a5cca78c576
 	github.com/Sheenam3/x-tracer v0.0.0-20200611040243-cf6210725787
 	github.com/docker/docker v1.4.2-0.20190927142053-ada3c14355ce
 	github.com/golang/protobuf v1.3.2
+	github.com/hashicorp/go-memdb v1.2.1
 	github.com/jroimartin/gocui v0.4.0
 	github.com/kisielk/godepgraph v0.0.0-20190626013829-57a7e4a651a9 // indirect
 	github.com/mJace/x-tracer v0.0.0-20200203080756-04fe6aafd1ed

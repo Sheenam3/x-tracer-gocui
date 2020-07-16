@@ -24,6 +24,9 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 }
 
 
+var (
+	g	*gocui.Gui
+)
 
 
 
@@ -52,6 +55,7 @@ var keys []Key = []Key{
 
 // Entry Point of the x-tracer
 func InitGui() {
+	var err error
 	c := getConfig()
 
 	// Ask version
@@ -70,22 +74,22 @@ func InitGui() {
 	// Only used to check errors
 	getClientSet()
 
-	G, err := gocui.NewGui(gocui.OutputNormal)
+	g, err = gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
 	}
-	defer G.Close()
+	defer g.Close()
 
-	G.Highlight = true
-	G.SelFgColor = gocui.ColorGreen
+	g.Highlight = true
+	g.SelFgColor = gocui.ColorGreen
 
-	G.SetManagerFunc(uiLayout)
+	g.SetManagerFunc(uiLayout)
 
-	if err := uiKey(G); err != nil {
+	if err := uiKey(g); err != nil {
 		log.Panicln(err)
 	}
 
-	if err := G.MainLoop(); err != nil && err != gocui.ErrQuit {
+	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
 	}
 }

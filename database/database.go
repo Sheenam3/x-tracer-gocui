@@ -1,26 +1,31 @@
 package database
 
 import (
-	godb "github.com/hashicorp/go-memdb"
-	"fmt"
+	memdb "github.com/hashicorp/go-memdb"
+	"time"
 )
 
 
 
 var(
 
-	db *godb.MemDB
+	db *memdb.MemDB
 
 )
 
 
 func Init(){
-
+	var err error
 	schema := &memdb.DBSchema{
 		Tables: map[string]*memdb.TableSchema{
 		"tcpconnect": &memdb.TableSchema{
 			Name: "tcpconnect",
 			Indexes: map[string]*memdb.IndexSchema{
+				"id": &memdb.IndexSchema{
+					Name:    "id",
+					Unique:  true,
+					Indexer: &memdb.IntFieldIndex{Field: "Timestamp"},
+				},
 				"pn": &memdb.IndexSchema{
 					Name:    "pn",
 					Unique:  false,
@@ -29,7 +34,7 @@ func Init(){
 				"sys_time": &memdb.IndexSchema{
 					Name:    "sys_time",
 					Unique:  false,
-					Indexer: &memdb.IntFieldIndex{Field: "Sys_Time"},
+					Indexer: &memdb.StringFieldIndex{Field: "Sys_Time"},
 				},
 
 				"t": &memdb.IndexSchema{
@@ -40,7 +45,7 @@ func Init(){
 				"pid": &memdb.IndexSchema{
 					Name:    "pid",
 					Unique:  false,
-					Indexer: &memdb.IntFieldIndex{Field: "Pid"},
+					Indexer: &memdb.StringFieldIndex{Field: "Pid"},
 				},
 
 				"pname": &memdb.IndexSchema{
@@ -51,7 +56,7 @@ func Init(){
 				"ip": &memdb.IndexSchema{
 					Name:    "ip",
 					Unique:  false,
-					Indexer: &memdb.IntFieldIndex{Field: "Ip"},
+					Indexer: &memdb.StringFieldIndex{Field: "Ip"},
 				},
 
 				"saddr": &memdb.IndexSchema{
@@ -62,12 +67,12 @@ func Init(){
 				"daddr": &memdb.IndexSchema{
 					Name:    "daddr",
 					Unique:  false,
-					Indexer: &memdb.IntFieldIndex{Field: "Daddr"},
+					Indexer: &memdb.StringFieldIndex{Field: "Daddr"},
 				},
 				"dport": &memdb.IndexSchema{
 					Name:    "dport",
 					Unique:  false,
-					Indexer: &memdb.IntFieldIndex{Field: "Dport"},
+					Indexer: &memdb.StringFieldIndex{Field: "Dport"},
 				},
 			},
 		},
@@ -76,7 +81,7 @@ func Init(){
 
 
 //Create a new data base
-db, err := memdb.NewMemDB(schema)
+db, err = memdb.NewMemDB(schema)
 if err != nil {
 	panic(err)
 }
@@ -88,14 +93,16 @@ if err != nil {
 func UpdateLogs(pn string, st string, t string, pid string, pname string, ip string, saddr string, daddr string, dport string) error{
 
 txn := db.Txn(true)
-
-logs := *Log{
-	&Log{pn, st, t, pid, pname, ip, saddr, daddr, dport},
+timestamp := time.Now().UnixNano()
+logs := []*Log{
+	&Log{timestamp,pn, st, t, pid, pname, ip, saddr, daddr, dport},
 	}
 
-if err := txn.Insert("tcpconnect", logs); err!= nil{
-	return err
-}	
+for _, p := range logs {
+	if err := txn.Insert("tcpconnect", p); err!= nil{
+		return err
+	}	
+}
 
 txn.Commit()
 
@@ -107,16 +114,16 @@ return nil
 
 func GetLogs() ([]*Log){
 
-txn = db.Txn(false)
+txn := db.Txn(false)
 defer txn.Abort()
 
 
-it, err := txn.Get("tcpconnect", "sys_time")
+it, err := txn.Get("tcpconnect", "id")
 if err != nil {
 	panic(err)
 }
 
-fmt.Println("All the people:")
+
 var logs []*Log
 
 for  obj := it.Next(); obj != nil; obj = it.Next() {

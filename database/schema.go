@@ -1,6 +1,7 @@
 package database
 
 type Log struct {
+	Timestamp int64
 	ProbeName    string  
 	Sys_Time  string
 	T    string  
@@ -10,5 +11,5 @@ type Log struct {
 	Saddr   string 
 	Daddr    string  
 	Dport   string  
-	Timestamp int64
+
 }

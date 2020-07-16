@@ -1,5 +1,6 @@
 package events
 
+type EmptyMessage struct{}
 
 
 type SendLogEvent struct {

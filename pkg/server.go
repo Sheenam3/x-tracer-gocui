@@ -1,4 +1,4 @@
-package streamserver
+package pkg
 
 import (
 	"strings"
@@ -15,10 +15,15 @@ import (
 
 
 type StreamServer struct {
-	port string
+	//port string
 }
 
-func (s *StreamServer) RouteLog(stream pb.SentLog_RouteLogServer) error {
+var (
+
+	port    string
+)
+
+func (s *StreamServer)RouteLog(stream pb.SentLog_RouteLogServer) error {
 	for {
 		r, err := stream.Recv()
 		if err == io.EOF {
@@ -81,16 +86,20 @@ func (s *StreamServer) RouteLog(stream pb.SentLog_RouteLogServer) error {
 	}
 }
 
-func New(servicePort string) *StreamServer{
+/*func New(servicePort string) *StreamServer{
 	return &StreamServer{
 		servicePort}
+}*/
+
+func SetPort(sport string) {
+	port = sport
 }
 
-func (s *StreamServer) StartServer(){
+func StartServer(){
 	server := grpc.NewServer()
 	pb.RegisterSentLogServer(server, &StreamServer{})
 
-	lis, err := net.Listen("tcp", ":"+s.port)
+	lis, err := net.Listen("tcp", ":"+ port)
 	if err != nil {
 		log.Fatalln("net.Listen error:", err)
 	}
@@ -101,14 +110,14 @@ func (s *StreamServer) StartServer(){
 
 
 func GetActiveLogs() string {
-
-	logs, err := database.GetLogs()
+	var err error
+	logs := database.GetLogs()
 
 	if err != nil {
 		log.Panic(err)
 	}
 
-	var displayConversation []string
+	var displayLogs []string
 
 
 	for _, val := range logs {

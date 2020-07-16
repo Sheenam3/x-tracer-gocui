@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"context"
+//	"context"
 	pb "github.com/Sheenam3/x-tracer-gocui/api"
 	pp "github.com/Sheenam3/x-tracer-gocui/parse/probeparser"
 	"github.com/Sheenam3/x-tracer-gocui/events"
@@ -17,8 +17,8 @@ type StreamClient struct {
 }
 
 var (
-	client  ChatClient
-	ctx	context.Context
+	client  pb.SentLogClient
+	//ctx	context.Background()
 )
 
 func New(servicePort string, masterIp string) *StreamClient {
@@ -35,7 +35,8 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 
 	defer connect.Close()
 
-	client := pb.NewSentLogClient(connect)
+	client = pb.NewSentLogClient(connect)
+	//ctx, _ = context.WithCancel(context.TODO())
 
 	logtcpconnect := make(chan pp.Log, 1)
 
@@ -49,11 +50,11 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 				for k := range pidList[j] {
 					if strconv.FormatUint(uint64(val.Pid), 10) == pidList[j][k] {*/
 						//log.Printf("PID: %d", pidList[j][k])
-
-						events.PublishEvent("log:send", events.SendLogEvent{Pid: r.Pid,
-							    ProbeName: r.Probe
-							    Log: r.Fulllog
-							    TimeStamp: "TimeStamp"
+						//str_pid := strconv.FormatInt(val.Pid, 10)
+						events.PublishEvent("log:send", events.SendLogEvent{Pid: val.Pid,
+							    ProbeName: val.Probe,
+							    Log: val.Fulllog,
+							    TimeStamp: "TimeStamp",
 							    })
 		
 						/*err = c.startLogStream(client, &pb.Log{
@@ -230,5 +231,6 @@ func (c *StreamClient) startLogStream(client pb.SentLogClient, r *pb.Log) {
 
 	log.Printf("Response from the Server ;) : %v", resp.Res)
 	return nil
-*/
 }
+*/
+

@@ -8,14 +8,14 @@ import (
 	//"os"
 	"os/exec"
 	//"runtime"
-	"strconv"
+//	"strconv"
 	"strings"
 	//"time"
 )
 
 type Log struct {
 	Fulllog string
-	Pid     int64
+	Pid     string
 	Time    float64
 	Probe   string
 }
@@ -70,16 +70,16 @@ func RunTcptracer(tool string, logtcptracer chan Log, pid string) {
 		//println("TCP TRACER", parsedLine[0])
 		if parsedLine[0] != "Tracing" {
 			if parsedLine[0] != "TIME(s)" {
-				ppid, err := strconv.ParseInt(parsedLine[3], 10, 64)
+				/*ppid, err := strconv.ParseInt(parsedLine[3], 10, 64)
 				if err != nil {
-					println("Tcptracer PID Error")
-				}
+					println(err)
+				}*/
 				/*timest, err := strconv.ParseFloat(parsedLine[timestamp], 64)
 				if err != nil {
 					println(" Tcptracer Timestamp Error")
 				}*/
 				timest := 0.00
-				n := Log{Fulllog: string(line), Pid: ppid, Time: timest, Probe: tool}
+				n := Log{Fulllog: string(line), Pid: parsedLine[3], Time: timest, Probe: tool}
 				logtcptracer <- n
 				//if num > 5000 {
 				//	close(logtcptracer)
@@ -110,11 +110,12 @@ func RunTcpconnect(tool string, logtcpconnect chan Log, pid string ) {
 		line, _, _ := buf.ReadLine()
 		parsedLine := strings.Fields(string(line))
 		//println(parsedLine[0])
-		if parsedLine[0] != "TIME(s)" {
-			ppid, err := strconv.ParseInt(parsedLine[3], 10, 64)
-			if err != nil {
+		if parsedLine[0] != "SYS_TIME" {
+			//ppid, err := strconv.ParseInt(parsedLine[3], 10, 64)
+			ppid :=  parsedLine[3]
+			/*if err != nil {
 				println("TCPConnect PID Error")
-			}
+			}*/
 			/*timest, err := strconv.ParseFloat(parsedLine[timestamp], 64)
 			if err != nil {
 				println(" TCPConnect Timestamp Error")
@@ -149,17 +150,17 @@ func RunTcpaccept(tool string, logtcpaccept chan Log, pid string) {
 		parsedLine := strings.Fields(string(line))
 
 		if parsedLine[0] != "TIME(s)" {
-			ppid, err := strconv.ParseInt(parsedLine[3], 10, 64)
+/*			ppid, err := strconv.ParseInt(parsedLine[3], 10, 64)
 			if err != nil {
 				println("TCPaccept PID Error")
 			}
-/*			timest, err := strconv.ParseFloat(parsedLine[timestamp], 64)
+			timest, err := strconv.ParseFloat(parsedLine[timestamp], 64)
 			if err != nil {
 				println(" TCPaccept Timestamp Error")
 			}*/
 			timest := 0.00
 
-			n := Log{Fulllog: string(line), Pid: ppid, Time: timest, Probe: tool}
+			n := Log{Fulllog: string(line), Pid: parsedLine[3], Time: timest, Probe: tool}
 			logtcpaccept <- n
 /*			if num > 5000 {
 				close(logtcpaccept)
@@ -189,17 +190,17 @@ func RunTcplife(tool string, logtcplife chan Log, pid string) {
 		parsedLine := strings.Fields(string(line))
 		println(parsedLine[0])
 		if parsedLine[0] != "TIME(s)" {
-			ppid, err := strconv.ParseInt(parsedLine[2], 10, 64)
+/*			ppid, err := strconv.ParseInt(parsedLine[2], 10, 64)
 			if err != nil {
 				println("TCPlife PID Error")
 			}
-/*			timest, err := strconv.ParseFloat(parsedLine[timestamp], 64)
+			timest, err := strconv.ParseFloat(parsedLine[timestamp], 64)
 			if err != nil {
 				println(" TCPlife Timestamp Error")
 			}*/
 			timest := 0.00
 
-			n := Log{Fulllog: string(line), Pid: ppid, Time: timest, Probe: tool}
+			n := Log{Fulllog: string(line), Pid: parsedLine[2], Time: timest, Probe: tool}
 			logtcplife <- n
 /*			if num > 5000 {
 				close(logtcpaccept)
@@ -229,17 +230,17 @@ func RunExecsnoop(tool string, logexecsnoop chan Log, pid string) {
 		parsedLine := strings.Fields(string(line))
 
 		//if parsedLine[0] == "TIME(s)" {
-		ppid, err := strconv.ParseInt(parsedLine[4], 10, 64)
+/*		ppid, err := strconv.ParseInt(parsedLine[4], 10, 64)
 		if err != nil {
 			println("Execsnoop PID Error")
 		}
-/*			timest, err := strconv.ParseFloat(parsedLine[timestamp], 64)
+			timest, err := strconv.ParseFloat(parsedLine[timestamp], 64)
 			if err != nil {
 				println(" Execsnoop Timestamp Error")
 			}*/
 		timest := 0.00
 
-		n := Log{Fulllog: string(line), Pid: ppid, Time: timest, Probe: tool}
+		n := Log{Fulllog: string(line), Pid: parsedLine[4], Time: timest, Probe: tool}
 		logexecsnoop <- n
 /*			if num > 5000 {
 				close(logtcpaccept)
@@ -270,13 +271,13 @@ func RunBiosnoop(tool string, logbiosnoop chan Log, pid string) {
                 parsedLine := strings.Fields(string(line))
 
 
-                ppid, err := strconv.ParseInt(parsedLine[3], 10, 64)
+/*                ppid, err := strconv.ParseInt(parsedLine[3], 10, 64)
                 if err != nil {
                                 println("Biosnoop PID Error")
-                }
+                }*/
                 timest := 0.00
 
-                n := Log{Fulllog: string(line), Pid: ppid, Time: timest, Probe: tool}
+                n := Log{Fulllog: string(line), Pid: parsedLine[3], Time: timest, Probe: tool}
                 logbiosnoop <- n
 
 	}
@@ -301,13 +302,13 @@ func RunCachetop(tool string, logcachetop chan Log, pid string) {
                 parsedLine := strings.Fields(string(line))
 
 
-                ppid, err := strconv.ParseInt(parsedLine[1], 10, 64)
+/*                ppid, err := strconv.ParseInt(parsedLine[1], 10, 64)
                 if err != nil {
                      println("Cachetop PID Error")
-                }
+                }*/
                 timest := 0.00
 
-                n := Log{Fulllog: string(line), Pid: ppid, Time: timest, Probe: tool}
+                n := Log{Fulllog: string(line), Pid: parsedLine[1], Time: timest, Probe: tool}
                 logcachetop <- n
 
         }
