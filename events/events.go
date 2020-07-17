@@ -2,8 +2,10 @@ package events
 
 import (
 	"io"
-	"log"
+	
+//	"log"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -20,30 +22,51 @@ var eventsChan chan struct {
 	EventType
 }
 
+
+var rm sync.RWMutex
+
 func Subscribe(h Handler, e EventType) {
+
+
 	if eventMap[e] == nil {
 		eventMap[e] = make([]Handler, 0)
 	}
 
 	eventMap[e] = append(eventMap[e], h)
+
 }
 
 func notify(t EventType, e Event) {
 
+	
 	for _, h := range eventMap[t] {
 		go h(e)
 	}
 }
 
 func PublishEvent(t EventType, e Event) {
-	select {
+	rm.RLock()
+
+/*	select {
 	case eventsChan <- struct {
 		Event
 		EventType
 	}{Event: e, EventType: t}:
 	default:
 		log.Panic("can't publish to chan")
-	}
+	}*/
+
+	go func(){
+
+		eventsChan <- struct {
+                	Event
+                	EventType
+        	}{Event: e, EventType: t}
+
+		
+	}()
+
+	rm.RUnlock()
 }
 
 // to be run as a goroutine
@@ -51,14 +74,16 @@ func Run() {
 	eventsChan = make(chan struct {
 		Event
 		EventType
-	}, 10)
+	})
 
 	defer close(eventsChan)
 
 	for {
+
+		
 		select {
 		case evt := <-eventsChan:
-
+		
 			notify(evt.EventType, evt.Event)
 		}
 

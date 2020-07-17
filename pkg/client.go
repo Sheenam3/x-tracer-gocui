@@ -1,10 +1,10 @@
 package pkg
 
 import (
-//	"context"
+	"context"
 	pb "github.com/Sheenam3/x-tracer-gocui/api"
 	pp "github.com/Sheenam3/x-tracer-gocui/parse/probeparser"
-	"github.com/Sheenam3/x-tracer-gocui/events"
+//	"github.com/Sheenam3/x-tracer-gocui/events"
 	"google.golang.org/grpc"
 	"log"
 //	"strconv"
@@ -51,21 +51,21 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 					if strconv.FormatUint(uint64(val.Pid), 10) == pidList[j][k] {*/
 						//log.Printf("PID: %d", pidList[j][k])
 						//str_pid := strconv.FormatInt(val.Pid, 10)
-						events.PublishEvent("log:send", events.SendLogEvent{Pid: val.Pid,
+/*						events.PublishEvent("log:send", events.SendLogEvent{Pid: val.Pid,
 							    ProbeName: val.Probe,
 							    Log: val.Fulllog,
 							    TimeStamp: "TimeStamp",
-							    })
-		
-						/*err = c.startLogStream(client, &pb.Log{
-							Pid:       val.Pid,
+							    })*/
+						//Pid := strconv.FormatUint(uint64(val.Pid))
+						err = c.startLogStream(client, &pb.Log{
+							Pid:       1234,
 							ProbeName: val.Probe,
 							Log:       val.Fulllog,
 							TimeStamp: "TimeStamp",
 						})
 						if err != nil {
 							log.Fatalf("startLogStream fail.err: %v", err)
-						}*/
+						}
 
 					//}
 				//}
@@ -204,17 +204,11 @@ for {
 
 }
 
-/*
-func (c *StreamClient) startLogStream(client pb.SentLogClient, r *pb.Log) {
 
-	events.PublishEvent("log:send", events.SendLogEvent{Pid: r.Pid,
-							    ProbeName: r.Probe
-							    Log: r.Fulllog
-							    TimeStamp: "TimeStamp"
-							    })
+func (c *StreamClient) startLogStream(client pb.SentLogClient, r *pb.Log) error {
 
 
-	stream, err := Client.RouteLog(context.Background())
+	stream, err := client.RouteLog(context.Background())
 	if err != nil {
 		return err
 	}
@@ -232,5 +226,5 @@ func (c *StreamClient) startLogStream(client pb.SentLogClient, r *pb.Log) {
 	log.Printf("Response from the Server ;) : %v", resp.Res)
 	return nil
 }
-*/
+
 

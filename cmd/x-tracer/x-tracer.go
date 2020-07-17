@@ -6,8 +6,8 @@ import (
         "github.com/Sheenam3/x-tracer-gocui/pkg"
         "github.com/Sheenam3/x-tracer-gocui/database"
         "github.com/Sheenam3/x-tracer-gocui/events"
-        "log"
-        "time"
+//        "log"
+ //       "time"
 
 )
 
@@ -30,10 +30,10 @@ func main() {
 
         ui.InitGui()
 
-        for {
+/*        for {
                 log.Println("From x-tracer- Sleeping")
                 time.Sleep(10 * time.Second)
-        }
+        }*/
 
 
 }

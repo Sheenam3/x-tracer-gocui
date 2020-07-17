@@ -1,15 +1,15 @@
 package pkg
 
 import (
-	"context"
+//	"context"
 	"github.com/Sheenam3/x-tracer-gocui/database"
 	"github.com/Sheenam3/x-tracer-gocui/events"
-	pb "github.com/Sheenam3/x-tracer-gocui/api"
-	"log"
+//	pb "github.com/Sheenam3/x-tracer-gocui/api"
+//	"log"
 	"os"
-	"strconv"
+//	"strconv"
 )
-
+/*
 func sendLog(e events.Event) {
 	if e, ok := e.(events.SendLogEvent); ok {
 		stream, err := client.RouteLog(context.Background())
@@ -47,14 +47,14 @@ func sendLog(e events.Event) {
 
 			events.PublishEvent("modal:hide", events.EmptyMessage{})
 			events.PublishEvent("log:refresh", events.EmptyMessage{})
-		}*/
+		}
 
 	} else {
 		// @TODO if e is not of SendMessageEvent type
 		// ignore for the time being
 	}
 }
-
+*/
 func receiveLog(e events.Event) {
 	if e, ok := e.(events.ReceiveLogEvent); ok {
 
@@ -70,6 +70,6 @@ func receiveLog(e events.Event) {
 }
 
 func SubscribeListeners() {
-	events.Subscribe(sendLog, "log:send")
+//	events.Subscribe(sendLog, "log:send")
 	events.Subscribe(receiveLog, "log:receive")
 }

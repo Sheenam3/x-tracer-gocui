@@ -122,7 +122,7 @@ func GetActiveLogs() string {
 
 	for _, val := range logs {
 		
-		displayLogs = append(displayLogs, fmt.Sprintf("%s: %s", val.Sys_Time, val.Pid))
+		displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time: %s |T: %s | PID:%s | PNAME:%s | IP:%s | SADDR:%s | DADDR:%s | DPORT:%s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Dport))
 	}
 
 	return strings.Join(displayLogs, "\n")
