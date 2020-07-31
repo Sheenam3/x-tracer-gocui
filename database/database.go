@@ -1,3 +1,4 @@
+
 package database
 
 import (
@@ -74,6 +75,12 @@ func Init(){
 					Unique:  false,
 					Indexer: &memdb.StringFieldIndex{Field: "Dport"},
 				},
+				"sport": &memdb.IndexSchema{
+					Name:    "sport",
+					Unique:  false,
+					Indexer: &memdb.StringFieldIndex{Field: "Sport"},
+				},
+				
 			},
 		},
 	},
@@ -89,13 +96,14 @@ if err != nil {
 }
 
 
-
-func UpdateLogs(pn string, st string, t string, pid string, pname string, ip string, saddr string, daddr string, dport string) error{
+//func UpdateLogs(pn string, st string, t string, pid string, pname string, ip string, saddr string, daddr string, dport string) error{
+func UpdateLogs(log TcpLog) error{
 
 txn := db.Txn(true)
 timestamp := time.Now().UnixNano()
 logs := []*Log{
-	&Log{timestamp,pn, st, t, pid, pname, ip, saddr, daddr, dport},
+	//&Log{timestamp,pn, st, t, pid, pname, ip, saddr, daddr, dport},
+	&Log{timestamp, log.ProbeName, log.Sys_Time, log.T, log.Pid, log.Pname, log.Ip, log.Saddr, log.Daddr, log.Dport, log.Sport},
 	}
 
 for _, p := range logs {

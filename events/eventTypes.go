@@ -23,5 +23,5 @@ type ReceiveLogEvent struct {
 	Saddr string
 	Daddr string
 	Dport string
-
+	Sport string
 }

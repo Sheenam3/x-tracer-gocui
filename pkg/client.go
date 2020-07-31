@@ -38,6 +38,8 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 	client = pb.NewSentLogClient(connect)
 	//ctx, _ = context.WithCancel(context.TODO())
 
+
+	if len(probename) > 1 {
 	logtcpconnect := make(chan pp.Log, 1)
 
 	go pp.RunTcpconnect(probename[1], logtcpconnect, pidList[0][0])
@@ -73,15 +75,15 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 		}
 
 	}()
-/*	
+	
 	logtcptracer := make(chan pp.Log, 1)
 	go pp.RunTcptracer(probename[0], logtcptracer, pidList[0][0])
 	go func() {
 
 		for val := range logtcptracer {
 			log.Printf("logtcptracer")
-						err = c.startLogStream(Client, &pb.Log{
-							Pid:       val.Pid,
+						err = c.startLogStream(client, &pb.Log{
+							Pid:       1234,
 							ProbeName: val.Probe,
 							Log:       val.Fulllog,
 							TimeStamp: "TimeStamp",
@@ -96,13 +98,14 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 
 	}()
 
+
 	logtcpaccept := make(chan pp.Log, 1)
 	go pp.RunTcpaccept(probename[2], logtcpaccept, pidList[0][0])
 	go func() {
 
 		for val := range logtcpaccept {
-						err = c.startLogStream(Client, &pb.Log{
-							Pid:       val.Pid,
+						err = c.startLogStream(client, &pb.Log{
+							Pid:       1234,
 							ProbeName: val.Probe,
 							Log:       val.Fulllog,
 							TimeStamp: "TimeStamp",
@@ -116,7 +119,7 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 
 	}()
 
-
+/*
 	logtcplife := make(chan pp.Log, 1)
 	go pp.RunTcplife(probename[3], logtcplife, pidList[0][0])
 	go func() {
@@ -196,7 +199,95 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 
         }()
 */
+	}else {
 
+		switch probename[0] {
+
+	        case "tcptracer":
+				
+			logtcptracer := make(chan pp.Log, 1)
+			go pp.RunTcptracer(probename[0], logtcptracer, pidList[0][0])
+			go func() {
+
+				for val := range logtcptracer {
+				
+							err = c.startLogStream(client, &pb.Log{
+								Pid:       1234,
+								ProbeName: val.Probe,
+								Log:       val.Fulllog,
+								TimeStamp: "TimeStamp",
+							})
+							if err != nil {
+								log.Fatalf("startLogStream fail.err: %v", err)
+							}
+					
+				
+			
+				}
+
+			}()
+
+
+
+
+
+		case "tcpconnect":
+			logtcpconnect := make(chan pp.Log, 1)
+
+			go pp.RunTcpconnect(probename[0], logtcpconnect, pidList[0][0])
+
+			go func() {
+
+				for val := range logtcpconnect {
+
+
+						err = c.startLogStream(client, &pb.Log{
+							Pid:       1234,
+							ProbeName: val.Probe,
+							Log:       val.Fulllog,
+							TimeStamp: "TimeStamp",
+						})
+						if err != nil {
+							log.Fatalf("startLogStream fail.err: %v", err)
+						}
+
+				
+			
+				}
+
+			}()
+	
+	
+
+
+		case "tcpaccept":
+
+			logtcpaccept := make(chan pp.Log, 1)
+			go pp.RunTcpaccept(probename[0], logtcpaccept, pidList[0][0])
+			go func() {
+
+				for val := range logtcpaccept {
+							err = c.startLogStream(client, &pb.Log{
+								Pid:       1234,
+								ProbeName: val.Probe,
+								Log:       val.Fulllog,
+								TimeStamp: "TimeStamp",
+							})
+							if err != nil {
+								log.Fatalf("startLogStream fail.err: %v", err)
+							}
+				
+			
+				}
+
+			}()
+
+
+
+		}
+
+
+	}
 for {
 
 		time.Sleep(time.Duration(1) * time.Second)

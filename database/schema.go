@@ -11,5 +11,22 @@ type Log struct {
 	Saddr   string 
 	Daddr    string  
 	Dport   string  
+	Sport	string
+}
+
+
+type TcpLog struct {
+
+        ProbeName    string
+        Sys_Time  string
+        T    string
+        Pid   string
+        Pname    string
+        Ip       string
+        Saddr   string
+        Daddr    string
+        Dport   string
+        Sport   string
 
 }
+

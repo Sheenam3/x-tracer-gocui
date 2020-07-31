@@ -58,8 +58,21 @@ func sendLog(e events.Event) {
 func receiveLog(e events.Event) {
 	if e, ok := e.(events.ReceiveLogEvent); ok {
 
-		
-		err := database.UpdateLogs(e.ProbeName, e.Sys_Time, e.T, e.Pid, e.Pname, e.Ip, e.Saddr, e.Daddr, e.Dport)
+		//var tcp database.TcpLog
+//		err := database.UpdateLogs(e.ProbeName, e.Sys_Time, e.T, e.Pid, e.Pname, e.Ip, e.Saddr, e.Daddr, e.Dport)
+		tcp := events.ReceiveLogEvent{ProbeName: e.ProbeName,
+                                     Sys_Time:  e.Sys_Time,
+                                     T:         e.T,
+                                     Pid:       e.Pid,
+                                     Pname:     e.Pname,
+                                     Ip:        e.Ip,
+                                     Saddr:     e.Saddr,
+                                     Daddr:     e.Daddr,
+                                     Dport:     e.Dport,
+                                     Sport:     e.Sport,
+		}
+		tcplogs := database.TcpLog(tcp)
+		err := database.UpdateLogs(tcplogs)
 		if err != nil {
 			// @TODO figure out how to handle error
 			os.Exit(1)

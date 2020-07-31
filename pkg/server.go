@@ -40,7 +40,8 @@ func (s *StreamServer)RouteLog(stream pb.SentLog_RouteLogServer) error {
 
 //		fmt.Println("PID:",r.Pid)
 
-		events.PublishEvent("log:receive", events.ReceiveLogEvent{ProbeName: r.ProbeName,
+		if r.ProbeName == "tcpconnect"{
+			events.PublishEvent("log:receive", events.ReceiveLogEvent{ProbeName: r.ProbeName,
 									  Sys_Time: parse[0],
 									  T:	    parse[1],
 									  Pid:      parse[3],
@@ -49,7 +50,37 @@ func (s *StreamServer)RouteLog(stream pb.SentLog_RouteLogServer) error {
 									  Saddr:    parse[6],
 									  Daddr:    parse[7],
 									  Dport:    parse[8],
+									  Sport:    "0",
 									 })
+		}else if r.ProbeName == "tcptracer"{
+			events.PublishEvent("log:receive", events.ReceiveLogEvent{ProbeName: r.ProbeName,
+									  Sys_Time: parse[0],
+									  T:	    parse[1],
+									  Pid:      parse[3],
+  									  Pname:    parse[4],
+									  Ip:	    parse[5],
+									  Saddr:    parse[6],
+									  Daddr:    parse[7],
+									  Dport:    parse[9],
+									  Sport:    parse[8],
+									 })
+		}else if r.ProbeName == "tcpaccept"{
+			events.PublishEvent("log:receive", events.ReceiveLogEvent{ProbeName: r.ProbeName,
+									  Sys_Time: parse[0],
+									  T:	    parse[1],
+									  Pid:      parse[3],
+  									  Pname:    parse[4],
+									  Ip:	    parse[5],
+									  Saddr:    parse[8],
+									  Daddr:    parse[6],
+									  Dport:    parse[7],
+									  Sport:    parse[9],
+									 })
+		}
+
+
+
+		
 /*
 		if r.ProbeName == "tcptracer"{
 
@@ -121,8 +152,14 @@ func GetActiveLogs() string {
 
 
 	for _, val := range logs {
-		
-		displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time: %s |T: %s | PID:%s | PNAME:%s | IP:%s | SADDR:%s | DADDR:%s | DPORT:%s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Dport))
+		if val.ProbeName == "tcpconnect"{
+                displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time: %s |T: %s | PID:%s | PNAME:%s | IP:%s | SADDR:%s | DADDR:%s | DPORT:%s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Dport))
+                }else if val.ProbeName == "tcptracer"{
+                displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time: %s |T: %s | PID:%s | PNAME:%s | IP:%s | SADDR:%s | DADDR:%s | DPORT:%s | SPORT:%s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Dport, val.Sport))
+                }else if val.ProbeName == "tcpaccept"{
+                displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time: %s |T: %s | PID:%s | PNAME:%s | IP:%s | LADDR:%s | RADDR:%s | LPORT:%s |RPORT: %s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Sport, val.Dport))
+		}
+		//displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time: %s |T: %s | PID:%s | PNAME:%s | IP:%s | SADDR:%s | DADDR:%s | DPORT:%s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Dport))
 	}
 
 	return strings.Join(displayLogs, "\n")

@@ -17,6 +17,16 @@ func refreshLogs(e events.Event) {
 		view.Clear()
 		_, _ = fmt.Fprint(view, pkg.GetActiveLogs())
 
+		g.SetViewOnTop("logs")
+		g.SetCurrentView("logs")
+//		ox, oy := view.Origin()
+//		view.Autoscroll = false
+//		view.SetOrigin(ox, oy+1)
+/*		view.SetCursor(0,2)
+		if l, err := getViewLine(g, view); err != nil || l == "" {
+				view.SetCursor(0, 2)
+		}*/
+		
 		return nil
 	})
 }
