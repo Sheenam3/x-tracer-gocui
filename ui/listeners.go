@@ -9,13 +9,18 @@ import (
 )
 
 func refreshLogs(e events.Event) {
-	g.Update(func(g *gocui.Gui) error {
+
+
+	if e, ok := e.(events.EmptyMessage); ok {
+
+        	g.Update(func(g *gocui.Gui) error {
 		view, err := g.View("logs")
 		if err != nil {
 			return err
 		}
 		view.Clear()
-		_, _ = fmt.Fprint(view, pkg.GetActiveLogs())
+		pn := e.Pn
+		_, _ = fmt.Fprint(view, pkg.GetActiveLogs(pn))
 
 		g.SetViewOnTop("logs")
 		g.SetCurrentView("logs")
@@ -28,7 +33,8 @@ func refreshLogs(e events.Event) {
 		}*/
 		
 		return nil
-	})
+		})
+	}
 }
 /*
 var isModalDisplayed = false

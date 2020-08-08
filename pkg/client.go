@@ -7,7 +7,7 @@ import (
 //	"github.com/Sheenam3/x-tracer-gocui/events"
 	"google.golang.org/grpc"
 	"log"
-//	"strconv"
+      "fmt"
 	"time"
 )
 
@@ -119,14 +119,14 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 
 	}()
 
-/*
+
 	logtcplife := make(chan pp.Log, 1)
 	go pp.RunTcplife(probename[3], logtcplife, pidList[0][0])
 	go func() {
-
+		fmt.Println("okhai")
 		for val := range logtcplife {
-						err = c.startLogStream(Client, &pb.Log{
-							Pid:       val.Pid,
+						err = c.startLogStream(client, &pb.Log{
+							Pid:       1234,
 							ProbeName: val.Probe,
 							Log:       val.Fulllog,
 							TimeStamp: "TimeStamp",
@@ -146,13 +146,13 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 	go func() {
 
 		for val := range logexecsnoop {
-						err = c.startLogStream(Client, &pb.Log{
-							Pid:       val.Pid,
+						err = c.startLogStream(client, &pb.Log{
+							Pid:       1234,
 							ProbeName: val.Probe,
 							Log:       val.Fulllog,
 							TimeStamp: "TimeStamp",
 						})
-                                                println("chala gaya") 
+
 						if err != nil {
 							log.Fatalf("startLogStream fail.err: %v", err)
 						}
@@ -166,13 +166,13 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
         go func() {
 
                 for val := range logbiosnoop {
-                                                err = c.startLogStream(Client, &pb.Log{
-                                                        Pid:       val.Pid,
+                                                err = c.startLogStream(client, &pb.Log{
+                                                        Pid:       1234,
                                                         ProbeName: val.Probe,
                                                         Log:       val.Fulllog,
                                                         TimeStamp: "TimeStamp",
                                                 })
-                                                println("chala gaya") 
+
                                                 if err != nil {
                                                         log.Fatalf("startLogStream fail.err: %v", err)
                                                 }
@@ -185,20 +185,20 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
         go func() {
 
                 for val := range logcachetop {
-                                                err = c.startLogStream(Client, &pb.Log{
-                                                        Pid:       val.Pid,
+                                                err = c.startLogStream(client, &pb.Log{
+                                                        Pid:       1234,
                                                         ProbeName: val.Probe,
                                                         Log:       val.Fulllog,
                                                         TimeStamp: "TimeStamp",
                                                 })
-                                                println("chala gaya") 
+
                                                 if err != nil {
                                                         log.Fatalf("startLogStream fail.err: %v", err)
                                                 }
                 }
 
         }()
-*/
+
 	}else {
 
 		switch probename[0] {
@@ -282,6 +282,99 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 
 			}()
 
+	        case "tcplife":
+				
+			logtcplife := make(chan pp.Log, 1)
+			go pp.RunTcplife(probename[0], logtcplife, pidList[0][0])
+			go func() {
+
+				for val := range logtcplife {
+				
+							err = c.startLogStream(client, &pb.Log{
+								Pid:       1234,
+								ProbeName: val.Probe,
+								Log:       val.Fulllog,
+								TimeStamp: "TimeStamp",
+							})
+							if err != nil {
+								log.Fatalf("startLogStream fail.err: %v", err)
+							}
+					
+				
+			
+				}
+
+			}()
+
+	        case "execsnoop":
+				
+			logexecsnoop := make(chan pp.Log, 1)
+			go pp.RunExecsnoop(probename[0], logexecsnoop, pidList[0][0])
+			go func() {
+
+				for val := range logexecsnoop {
+				
+							err = c.startLogStream(client, &pb.Log{
+								Pid:       1234,
+								ProbeName: val.Probe,
+								Log:       val.Fulllog,
+								TimeStamp: "TimeStamp",
+							})
+							if err != nil {
+								log.Fatalf("startLogStream fail.err: %v", err)
+							}
+					
+				
+			
+				}
+
+			}()
+	        case "biosnoop":
+				
+			logbiosnoop := make(chan pp.Log, 1)
+			go pp.RunBiosnoop(probename[0], logbiosnoop, pidList[0][0])
+			go func() {
+
+				for val := range logbiosnoop {
+				
+							err = c.startLogStream(client, &pb.Log{
+								Pid:       1234,
+								ProbeName: val.Probe,
+								Log:       val.Fulllog,
+								TimeStamp: "TimeStamp",
+							})
+							if err != nil {
+								log.Fatalf("startLogStream fail.err: %v", err)
+							}
+					
+				
+			
+				}
+
+			}()
+	        case "cachestat":
+				
+			logcachetop := make(chan pp.Log, 1)
+			go pp.RunCachetop(probename[0], logcachetop, pidList[0][0])
+			go func() {
+
+				for val := range logcachetop {
+				
+							err = c.startLogStream(client, &pb.Log{
+								Pid:       1234,
+								ProbeName: val.Probe,
+								Log:       val.Fulllog,
+								TimeStamp: "TimeStamp",
+							})
+							if err != nil {
+								log.Fatalf("startLogStream fail.err: %v", err)
+							}
+					
+				
+			
+				}
+
+			}()
 
 
 		}
