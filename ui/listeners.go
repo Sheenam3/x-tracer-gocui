@@ -25,7 +25,7 @@ func refreshLogs(e events.Event) {
 		g.SetViewOnTop("logs")
 		g.SetCurrentView("logs")
 //		ox, oy := view.Origin()
-//		view.Autoscroll = false
+		view.Autoscroll = true
 //		view.SetOrigin(ox, oy+1)
 /*		view.SetCursor(0,2)
 		if l, err := getViewLine(g, view); err != nil || l == "" {

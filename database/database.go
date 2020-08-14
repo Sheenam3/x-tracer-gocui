@@ -5,6 +5,7 @@ import (
 	memdb "github.com/hashicorp/go-memdb"
 	"time"
 //	"fmt"
+	"os"
 )
 
 
@@ -556,11 +557,13 @@ return logs
 
 
 
-func GetTcpLifeLogs() ([]*TcpLifeLog){
+func GetTcpLifeLogs() (map[int64]*TcpLifeLog){
 
 txn := tldb.Txn(false)
 defer txn.Abort()
 
+
+logs := make(map[int64]*TcpLifeLog)
 
 
 it, err := txn.Get("tcplife", "id")
@@ -569,11 +572,14 @@ if err != nil {
 }
 
 
-var logs []*TcpLifeLog
+//var logs []*TcpLifeLog
+
 
 for  obj := it.Next(); obj != nil; obj = it.Next() {
 	p := obj.(*TcpLifeLog)
-	logs = append(logs, p)
+	timestamp := p.TimeStamp
+	logs[timestamp] = p
+//	logs = append(logs, p)
 }
 
 return logs
@@ -591,6 +597,7 @@ defer txn.Abort()
 it, err := txn.Get("execsnoop", "id")
 if err != nil {
 	panic(err)
+	os.Exit(1)
 }
 
 

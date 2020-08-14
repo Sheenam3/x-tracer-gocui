@@ -4,6 +4,7 @@ import (
 	"strings"
 	"fmt"
 	pb "github.com/Sheenam3/x-tracer-gocui/api"
+	"github.com/gogo/protobuf/sortkeys"
 	"github.com/Sheenam3/x-tracer-gocui/events"
 	"github.com/Sheenam3/x-tracer-gocui/database"
 	"google.golang.org/grpc"
@@ -209,6 +210,7 @@ func GetActiveLogs(pn string) string {
 	var err error
 
 	var displayLogs []string	
+	var keys []int64
 
 	if pn == "tcplife"{
 	
@@ -219,8 +221,19 @@ func GetActiveLogs(pn string) string {
 		}
 
 
+		
+		for k := range logs {
+			keys = append(keys, k)
 
-		for _, val := range logs {
+		}
+
+		
+		sortkeys.Int64s(keys)
+
+
+		for _, log := range keys {
+			val := logs[log]
+			//fmt.Println(val.ProbeName)
                 	displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | PID:%s | PNAME:%s | LADDR:%s | LPORT:%s | RADDR:%s | RPORT:%s | Tx_kb:%s | Rx_kb:%s | Ms: %s \n", val.ProbeName,val.Sys_Time,val.Pid,val.Pname, val.Laddr, val.Lport, val.Raddr, val.Rport, val.Tx_kb, val.Rx_kb, val.Ms))
 
 		}
