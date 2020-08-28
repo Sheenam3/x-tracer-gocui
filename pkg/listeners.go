@@ -10,17 +10,6 @@ import (
 
 
 func receiveLog(e events.Event) {
-/*	f, err := os.Create("test.txt")
-	if err != nil {
-     	   fmt.Println(err)
-       		 return
-    	}
- l, err := f.WriteString("Tamahsa shuru")
-    if err != nil {
-        fmt.Println(err)
-        f.Close()
-        return
-    }*/
    	if e, ok := e.(events.ReceiveLogEvent); ok {
 
 		tcp := events.ReceiveLogEvent{ProbeName: e.ProbeName,
@@ -33,46 +22,28 @@ func receiveLog(e events.Event) {
                                      Daddr:     e.Daddr,
                                      Dport:     e.Dport,
                                      Sport:     e.Sport,
-	//			     Tx_kb:	"0",
-	//			     Rx_kb:	"0",
-	//			     Ms:	"0",
 		}
 		tcplogs := database.TcpLog(tcp)
 
-/* fmt.Println(l, "after copying")
-		   
-		
-		if e.ProbeName == "tcplife"{
-
-			fmt.Println(l,"inside tcplife")
-			err := database.UpdateTcpLifeLogs(tcplogs)
-			fmt.Println(l,"after tcplife")
-			if err != nil {
-			fmt.Println(l,"error aa gayi hawwwwwwwwwwww")	
-				 err = f.Close()
-		    if err != nil {
-	        	fmt.Println(err)
-        		return
-    		}
-
-				fmt.Println(err)
-				os.Exit(1)
-			}
-
-		
-		}else{	*/
 			err := database.UpdateLogs(tcplogs)
 			if err != nil {
-	
+
 				os.Exit(1)
 			}
-		
 
-//		fmt.Println(l,"before calling next event")
-		
-		events.PublishEvent("logs:refresh", events.EmptyMessage{Pn: e.ProbeName})
-//				fmt.Println(l,"after calling next event")
-	
+
+
+		if Integ == true{
+
+			events.PublishEvent("logs:refreshsingle", events.EmptyMessage{Pn: e.ProbeName})
+
+		}else{
+
+			events.PublishEvent("logs:refreshinteg", events.EmptyMessage{Pn: e.ProbeName})
+
+		}
+
+
 
 	}
 }
@@ -99,7 +70,16 @@ func tcplifeLog(e events.Event) {
 
 			os.Exit(1)
 		}
-		events.PublishEvent("logs:refresh", events.EmptyMessage{Pn: e.ProbeName})
+
+		if Integ == true{
+
+			events.PublishEvent("logs:refreshsingle", events.EmptyMessage{Pn: e.ProbeName})
+
+		}else{
+	
+			events.PublishEvent("logs:refreshinteg", events.EmptyMessage{Pn: e.ProbeName})
+
+		}
 
 	}
 }
@@ -124,7 +104,16 @@ func execsnoopLog(e events.Event) {
 
 			os.Exit(1)
 		}
-		events.PublishEvent("logs:refresh", events.EmptyMessage{Pn: e.ProbeName})
+
+		if Integ == true{
+
+			events.PublishEvent("logs:refreshsingle", events.EmptyMessage{Pn: e.ProbeName})
+
+		}else{
+	
+			events.PublishEvent("logs:refreshinteg", events.EmptyMessage{Pn: e.ProbeName})
+
+		}
 
 	}
 }
@@ -151,7 +140,16 @@ func biosnoopLog(e events.Event) {
 
 			os.Exit(1)
 		}
-		events.PublishEvent("logs:refresh", events.EmptyMessage{Pn: e.ProbeName})
+		if Integ == true{
+
+			events.PublishEvent("logs:refreshsingle", events.EmptyMessage{Pn: e.ProbeName})
+
+		}else{
+	
+			events.PublishEvent("logs:refreshinteg", events.EmptyMessage{Pn: e.ProbeName})
+
+		}
+
 
 	}
 }
@@ -178,7 +176,16 @@ func cachestatLog(e events.Event) {
 
 			os.Exit(1)
 		}
-		events.PublishEvent("logs:refresh", events.EmptyMessage{Pn: e.ProbeName})
+		if Integ == true{
+
+			events.PublishEvent("logs:refreshsingle", events.EmptyMessage{Pn: e.ProbeName})
+
+		}else{
+	
+			events.PublishEvent("logs:refreshinteg", events.EmptyMessage{Pn: e.ProbeName})
+
+		}
+
 
 	}
 }

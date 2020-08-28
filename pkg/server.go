@@ -209,11 +209,11 @@ func StartServer(){
 func GetActiveLogs(pn string) string {
 	var err error
 
-	var displayLogs []string	
+
 	var keys []int64
 
 	if pn == "tcplife"{
-	
+		var tlLogs []string
 		logs := database.GetTcpLifeLogs()
 
 		if err != nil {
@@ -221,25 +221,26 @@ func GetActiveLogs(pn string) string {
 		}
 
 
-		
+
 		for k := range logs {
 			keys = append(keys, k)
 
 		}
 
-		
+
 		sortkeys.Int64s(keys)
 
 
 		for _, log := range keys {
 			val := logs[log]
 			//fmt.Println(val.ProbeName)
-                	displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | PID:%s | PNAME:%s | LADDR:%s | LPORT:%s | RADDR:%s | RPORT:%s | Tx_kb:%s | Rx_kb:%s | Ms: %s \n", val.ProbeName,val.Sys_Time,val.Pid,val.Pname, val.Laddr, val.Lport, val.Raddr, val.Rport, val.Tx_kb, val.Rx_kb, val.Ms))
+                	tlLogs = append(tlLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | PID:%s | PNAME:%s | LADDR:%s | LPORT:%s | RADDR:%s | RPORT:%s | Tx_kb:%s | Rx_kb:%s | Ms: %s \n", val.ProbeName,val.Sys_Time,val.Pid,val.Pname, val.Laddr, val.Lport, val.Raddr, val.Rport, val.Tx_kb, val.Rx_kb, val.Ms))
 
 		}
+		return strings.Join(tlLogs, "\n")
 
 	}else if pn == "execsnoop"{
-	
+		var esLogs []string
 		logs := database.GetExecSnoopLogs()
 
 		if err != nil {
@@ -249,12 +250,13 @@ func GetActiveLogs(pn string) string {
 
 
 		for _, val := range logs {
-                	displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | T:%s | PNAME:%s | PID:%s | PPID:%s | RET:%s | ARGS:%s \n", val.ProbeName,val.Sys_Time,val.T,val.Pname,val.Pid,val.Ppid, val.Ret, val.Args))
+                	esLogs = append(esLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | T:%s | PNAME:%s | PID:%s | PPID:%s | RET:%s | ARGS:%s \n", val.ProbeName,val.Sys_Time,val.T,val.Pname,val.Pid,val.Ppid, val.Ret, val.Args))
 
 		}
+		return strings.Join(esLogs, "\n")
 
 	}else if pn == "biosnoop"{
-	
+		var bsLogs []string
 		logs := database.GetBioSnoopLogs()
 
 		if err != nil {
@@ -264,12 +266,13 @@ func GetActiveLogs(pn string) string {
 
 
 		for _, val := range logs {
-                	displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | T:%s | PNAME:%s | PID:%s | DISK:%s | R/W:%s | SECTOR:%s | BYTES:%s | LAT:%s \n", val.ProbeName,val.Sys_Time,val.T,val.Pname,val.Pid,val.Disk, val.Rw, val.Sector, val.Bytes, val.Lat))
+                	bsLogs = append(bsLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | T:%s | PNAME:%s | PID:%s | DISK:%s | R/W:%s | SECTOR:%s | BYTES:%s | LAT:%s \n", val.ProbeName,val.Sys_Time,val.T,val.Pname,val.Pid,val.Disk, val.Rw, val.Sector, val.Bytes, val.Lat))
 
 		}
+		return strings.Join(bsLogs, "\n")
 
 	}else if pn == "cachestat"{
-	
+		var csLogs []string
 		logs := database.GetCacheStatLogs()
 
 		if err != nil {
@@ -279,12 +282,13 @@ func GetActiveLogs(pn string) string {
 
 
 		for _, val := range logs {
-                	displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | PID:%s | UID:%s | CMD:%s | HITS:%s | MISS:%s | DIRTIES:%s | READ_HIT%:%s | WRITE_HIT%:%s \n", val.ProbeName,val.Sys_Time,val.Pid,val.Uid, val.Cmd, val.Hits, val.Miss, val.Dirties, val.Read_hit, val.Write_hit))
+                	csLogs = append(csLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | PID:%s | UID:%s | CMD:%s | HITS:%s | MISS:%s | DIRTIES:%s | READ_HIT%:%s | WRITE_HIT%:%s \n", val.ProbeName,val.Sys_Time,val.Pid,val.Uid, val.Cmd, val.Hits, val.Miss, val.Dirties, val.Read_hit, val.Write_hit))
 
 		}
+		return strings.Join(csLogs, "\n")
 
 	}else{
-
+		var tcpLogs []string
 		logs := database.GetLogs()
 
 		if err != nil {
@@ -293,13 +297,16 @@ func GetActiveLogs(pn string) string {
 
 		for _, val := range logs {
 			if val.ProbeName == "tcpconnect"{
-		                displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s |T:%s | PID:%s | PNAME:%s | IP:%s | SADDR:%s | DADDR:%s | DPORT:%s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Dport))
+		                tcpLogs = append(tcpLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s |T:%s | PID:%s | PNAME:%s | IP:%s | SADDR:%s | DADDR:%s | DPORT:%s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Dport))
                 	}else if val.ProbeName == "tcptracer"{
-		                displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s |T:%s | PID:%s | PNAME:%s | IP:%s | SADDR:%s | DADDR:%s | DPORT:%s | SPORT:%s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Dport, val.Sport))
+		                tcpLogs = append(tcpLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s |T:%s | PID:%s | PNAME:%s | IP:%s | SADDR:%s | DADDR:%s | DPORT:%s | SPORT:%s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Dport, val.Sport))
                 	}else if val.ProbeName == "tcpaccept"{
-		                displayLogs = append(displayLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s |T:%s | PID:%s | PNAME:%s | IP:%s | LADDR:%s | RADDR:%s | LPORT:%s |RPORT: %s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Sport, val.Dport))
+		                tcpLogs = append(tcpLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s |T:%s | PID:%s | PNAME:%s | IP:%s | LADDR:%s | RADDR:%s | LPORT:%s |RPORT: %s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Sport, val.Dport))
 			}
 		}
+
+		return strings.Join(tcpLogs, "\n")
 	}
-	return strings.Join(displayLogs, "\n")
+	return "Nothing yet"
+
 }

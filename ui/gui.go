@@ -38,6 +38,7 @@ var NAMESPACE string = "default"
 // Configure globale keys
 var keys []Key = []Key{
 	Key{"", gocui.KeyCtrlC, actionGlobalQuit},
+	Key{"logs", gocui.KeyCtrlP, actionViewProbesList},
 //	Key{"", gocui.KeyCtrlD, actionGlobalToggleViewDebug},
 	Key{"pods", gocui.KeyCtrlN, actionGlobalToggleViewNamespaces},
 	Key{"pods", gocui.KeyArrowUp, actionViewPodsUp},
@@ -106,6 +107,10 @@ func uiLayout(g *gocui.Gui) error {
 
 	//viewDebug(g, maxX, maxY)
 	viewLogs(g, maxX, maxY)
+	viewTcpLogs(g, maxX, maxY)
+	viewTcpLifeLogs(g, maxX, maxY)
+	viewExecSnoopLogs(g, maxX, maxY)
+	viewCacheStatLogs(g, maxX, maxY)
 	viewNamespaces(g, maxX, maxY)
 	viewProbes(g, maxX, maxY)
 	viewOverlay(g, maxX, maxY)

@@ -22,6 +22,8 @@ type agent struct {
 var podObj *v1.Pod
 var svcObj *v1.Service
 
+var C chan bool
+
 func New(containerId string, nodeId string, masterIp string, clientSet *kubernetes.Clientset, probes string) *agent {
 	return &agent{
 		containerId,
@@ -197,6 +199,7 @@ func (a *agent) ApplyAgentService() {
 func (a *agent) SetupCloseHandler() {
 	c := make(chan os.Signal, 2)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	//C = make(chan bool)
 	go func() {
 		<-c
 		_ = a.clientSet.CoreV1().Pods(podObj.Namespace).Delete(podObj.Name, &metav1.DeleteOptions{})

@@ -188,7 +188,7 @@ func RunTcplife(tool string, logtcplife chan Log, pid string) {
 	for {
 		line, _, _ := buf.ReadLine()
 		parsedLine := strings.Fields(string(line))
-		println(parsedLine[0])
+
 		if parsedLine[0] != "TIME(s)" {
 /*			ppid, err := strconv.ParseInt(parsedLine[2], 10, 64)
 			if err != nil {

@@ -8,33 +8,121 @@ import (
 	//"log"
 )
 
-func refreshLogs(e events.Event) {
+func refreshIntegratedLogs(e events.Event) {
 
 
 	if e, ok := e.(events.EmptyMessage); ok {
 
         	g.Update(func(g *gocui.Gui) error {
-		view, err := g.View("logs")
-		if err != nil {
-			return err
-		}
-		view.Clear()
-		pn := e.Pn
-		_, _ = fmt.Fprint(view, pkg.GetActiveLogs(pn))
 
-		g.SetViewOnTop("logs")
-		g.SetCurrentView("logs")
-//		ox, oy := view.Origin()
-		view.Autoscroll = true
-//		view.SetOrigin(ox, oy+1)
-/*		view.SetCursor(0,2)
-		if l, err := getViewLine(g, view); err != nil || l == "" {
-				view.SetCursor(0, 2)
-		}*/
-		
-		return nil
+			pn := e.Pn
+			if pn == "tcplife"{
+				viewtl, err := g.View("tcplife")
+				if err != nil {
+					return err
+				}
+				viewtl.Clear()
+
+				_, _ = fmt.Fprint(viewtl, pkg.GetActiveLogs(pn))
+
+				g.SetViewOnTop("tcplife")
+//				g.SetCurrentView("tcplife")
+
+				viewtl.Autoscroll = true
+
+				return nil
+			/*}else if pn == "biosnoop"{
+                                view, err := g.View("logs")
+                                if err != nil {
+                                        return err
+                                }
+                                view.Clear()
+
+                                _, _ = fmt.Fprint(view, pkg.GetActiveLogs(pn))
+
+                                g.SetViewOnTop("logs")
+                                g.SetCurrentView("logs")
+
+                                view.Autoscroll = true
+
+                                return nil
+			*/}else if pn == "cachestat"{
+                                viewcs, err := g.View("cachestat")
+                                if err != nil {
+                                        return err
+                                }
+                                viewcs.Clear()
+
+                                _, _ = fmt.Fprint(viewcs, pkg.GetActiveLogs(pn))
+
+                                g.SetViewOnTop("cachestat")
+//                                g.SetCurrentView("cachestat")
+
+                                viewcs.Autoscroll = true
+
+                                return nil
+			}else if pn == "execsnoop"{
+                                viewes, err := g.View("execsnoop")
+                                if err != nil {
+                                        return err
+                                }
+                                viewes.Clear()
+
+                                _, _ = fmt.Fprint(viewes, pkg.GetActiveLogs(pn))
+
+                                g.SetViewOnTop("execsnoop")
+//                                g.SetCurrentView("execsnoop")
+
+                                viewes.Autoscroll = true
+
+                                return nil
+			}else{
+				view, err := g.View("tcplogs")
+                                if err != nil {
+                                        return err
+                                }
+                                view.Clear()
+
+                                _, _ = fmt.Fprint(view, pkg.GetActiveLogs(pn))
+
+                                g.SetViewOnTop("tcplogs")
+//                                g.SetCurrentView("tcplogs")
+
+                                view.Autoscroll = true
+
+                                return nil
+			}
+
 		})
 	}
+}
+
+
+func refreshSingleLogs(e events.Event) {
+
+
+	if e, ok := e.(events.EmptyMessage); ok {
+
+        	g.Update(func(g *gocui.Gui) error {
+
+			pn := e.Pn
+			view, err := g.View("logs")
+			if err != nil {
+				return err
+			}
+			view.Clear()
+
+			_, _ = fmt.Fprint(view, pkg.GetActiveLogs(pn))
+
+			g.SetViewOnTop("logs")
+			g.SetCurrentView("logs")
+
+			view.Autoscroll = true
+
+			return nil
+		})
+	}
+
 }
 /*
 var isModalDisplayed = false
@@ -77,7 +165,8 @@ func displayModal(e events.Event) {
 }
 */
 func SubscribeListeners() {
-	events.Subscribe(refreshLogs, "logs:refresh")
+	events.Subscribe(refreshIntegratedLogs, "logs:refreshinteg")
+	events.Subscribe(refreshSingleLogs, "logs:refreshsingle")
 
 //	events.Subscribe(displayModal, "modal:display")
 	

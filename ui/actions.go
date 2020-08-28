@@ -3,6 +3,7 @@ package ui
 import (
 	"github.com/jroimartin/gocui"
 	"github.com/Sheenam3/x-tracer-gocui/events"
+
 )
 
 //var DEBUG_DISPLAYED bool = false
@@ -12,7 +13,13 @@ var NAMESPACES_DISPLAYED bool = false
 
 
 // Global action: Quit
+
 func actionGlobalQuit(g *gocui.Gui, v *gocui.View) error {
+
+	if err := deletePod("x-agent"); err != nil {
+		return err
+	}
+
 	return gocui.ErrQuit
 }
 
@@ -72,7 +79,7 @@ func actionViewPodsDown(g *gocui.Gui, v *gocui.View) error {
 }
 
 
-//Display Logs after Pod select
+//Display Probe Tools after Pod select
 func actionViewPodsSelect(g *gocui.Gui, v *gocui.View) error {
         line,err  := getViewLine(g,v)
         if err != nil {
@@ -194,7 +201,7 @@ func actionViewProbesSelect(g *gocui.Gui, v *gocui.View) error {
 	displayConfirmation(g, line+" probe selected")
 	startAgent(G,p,lv,line)
 	G.SetViewOnTop("logs")
-	G.SetCurrentView("logs")	
+	G.SetCurrentView("logs")
 	//debug(g, "Select namespace: "+line)
 	//NAMESPACE = line
 	//go viewPodsRefreshList(g)
@@ -202,4 +209,19 @@ func actionViewProbesSelect(g *gocui.Gui, v *gocui.View) error {
 
 	return err
 }
- 
+
+
+func actionViewProbesList(g *gocui.Gui, v *gocui.View) error {
+
+	if err := deletePod("x-agent"); err != nil {
+		return err
+	}
+
+	LOG_MOD = "pod"
+	errr := showSelectProbe(g)
+        changeStatusContext(g, "SL")
+
+	g.DeleteView("logs")
+
+	return errr
+}

@@ -103,6 +103,81 @@ func viewLogs(g *gocui.Gui, lMaxX int, lMaxY int) error {
 	return nil
 }
 
+
+func viewTcpLogs(g *gocui.Gui, lMaxX int, lMaxY int) error {
+	if v, err := g.SetView("tcplogs", 1, 1, lMaxX/2, lMaxY/2); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+
+		v.Title = " Tcp Logs "
+		v.Autoscroll = true
+		v.Wrap = true
+
+		v.SetCursor(1,3)
+
+
+	}
+
+	return nil
+}
+
+func viewTcpLifeLogs(g *gocui.Gui, lMaxX int, lMaxY int) error {
+	if v, err := g.SetView("tcplife", lMaxX/2 , 1, lMaxX, lMaxY/2); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+
+		v.Title = " TcpLife "
+		v.Autoscroll = true
+		v.Wrap = true
+
+		v.SetCursor(1,3)
+
+
+	}
+
+	return nil
+}
+
+
+func viewExecSnoopLogs(g *gocui.Gui, lMaxX int, lMaxY int) error {
+	if v, err := g.SetView("execsnoop", 1, lMaxY/2 , lMaxX/2, lMaxY); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+
+		v.Title = " ExecSnoop "
+		v.Autoscroll = true
+		v.Wrap = true
+
+		v.SetCursor(1,3)
+
+
+	}
+
+	return nil
+}
+
+func viewCacheStatLogs(g *gocui.Gui, lMaxX int, lMaxY int) error {
+	if v, err := g.SetView("cachestat", lMaxX/2 , lMaxY/2, lMaxX, lMaxY); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+
+		v.Title = " CacheStats "
+		v.Autoscroll = true
+		v.Wrap = true
+
+		v.SetCursor(1,3)
+
+
+	}
+
+	return nil
+}
+
+
 // View: Namespace
 func viewNamespaces(g *gocui.Gui, lMaxX int, lMaxY int) error {
 	w := lMaxX / 2

@@ -18,6 +18,7 @@ type StreamClient struct {
 
 var (
 	client  pb.SentLogClient
+	Integ   bool
 	//ctx	context.Background()
 )
 
@@ -28,6 +29,8 @@ func New(servicePort string, masterIp string) *StreamClient {
 }
 
 func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[]pp.Log) {
+
+
 	connect, err := grpc.Dial(c.ip+":"+c.port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("grpc.Dial err: %v", err)
@@ -38,8 +41,10 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 	client = pb.NewSentLogClient(connect)
 	//ctx, _ = context.WithCancel(context.TODO())
 
-
+	
 	if len(probename) > 1 {
+
+	Integ = true
 	logtcpconnect := make(chan pp.Log, 1)
 
 	go pp.RunTcpconnect(probename[1], logtcpconnect, pidList[0][0])
