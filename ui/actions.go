@@ -3,7 +3,7 @@ package ui
 import (
 	"github.com/jroimartin/gocui"
 	"github.com/Sheenam3/x-tracer-gocui/events"
-
+	"time"
 )
 
 //var DEBUG_DISPLAYED bool = false
@@ -220,8 +220,8 @@ func actionViewProbesList(g *gocui.Gui, v *gocui.View) error {
 	LOG_MOD = "pod"
 	errr := showSelectProbe(g)
         changeStatusContext(g, "SL")
+	time.Sleep(10 * time.Second)
 
-	g.DeleteView("logs")
 
 	return errr
 }
