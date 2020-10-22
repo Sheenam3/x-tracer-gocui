@@ -5,7 +5,7 @@ import (
 	memdb "github.com/hashicorp/go-memdb"
 	"time"
 //	"fmt"
-	"os"
+//	"os"
 )
 
 
@@ -587,28 +587,34 @@ return logs
 
 //Get execsnoop logs
 
-func GetExecSnoopLogs() ([]*ExecSnoopLog){
+func GetExecSnoopLogs() (map[int64]*ExecSnoopLog){
 
 txn := es.Txn(false)
 defer txn.Abort()
+
+
+logs := make(map[int64]*ExecSnoopLog)
 
 
 
 it, err := txn.Get("execsnoop", "id")
 if err != nil {
 	panic(err)
-	os.Exit(1)
+	//os.Exit(1)
 }
 
 
-var logs []*ExecSnoopLog
+//var logs []*ExecSnoopLog
 
 for  obj := it.Next(); obj != nil; obj = it.Next() {
 	p := obj.(*ExecSnoopLog)
-	logs = append(logs, p)
+	timestamp := p.TimeStamp
+	logs[timestamp] = p
+//	logs = append(logs, p)
 }
 
 return logs
+
 }
 
 

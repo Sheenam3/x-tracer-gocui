@@ -248,9 +248,18 @@ func GetActiveLogs(pn string) string {
 		}
 
 
+		for k := range logs {
 
-		for _, val := range logs {
-                	esLogs = append(esLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | T:%s | PNAME:%s | PID:%s | PPID:%s | RET:%s | ARGS:%s \n", val.ProbeName,val.Sys_Time,val.T,val.Pname,val.Pid,val.Ppid, val.Ret, val.Args))
+			keys = append(keys, k)
+
+		}
+
+
+		sortkeys.Int64s(keys)
+
+		for _, log := range keys {
+			val := logs[log] 
+			esLogs = append(esLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | T:%s | PNAME:%s | PID:%s | PPID:%s | RET:%s | ARGS:%s \n", val.ProbeName,val.Sys_Time,val.T,val.Pname,val.Pid,val.Ppid, val.Ret, val.Args))
 
 		}
 		return strings.Join(esLogs, "\n")
