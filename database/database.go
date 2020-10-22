@@ -532,12 +532,12 @@ return nil
 }
 
 
-func GetLogs() ([]*Log){
+func GetLogs() (map[int64]*Log){
 
 txn := db.Txn(false)
 defer txn.Abort()
 
-
+logs := make(map[int64]*Log)
 
 it, err := txn.Get("tcpconnect", "id")
 if err != nil {
@@ -545,11 +545,13 @@ if err != nil {
 }
 
 
-var logs []*Log
+//var logs []*Log
 
 for  obj := it.Next(); obj != nil; obj = it.Next() {
 	p := obj.(*Log)
-	logs = append(logs, p)
+	timestamp := p.Timestamp
+	logs[timestamp] = p
+//	logs = append(logs, p)
 }
 
 return logs
@@ -620,12 +622,13 @@ return logs
 
 //Get Biosnoop logs
 
-func GetBioSnoopLogs() ([]*BioSnoopLog){
+func GetBioSnoopLogs() (map[int64]*BioSnoopLog){
 
 txn := bs.Txn(false)
 defer txn.Abort()
 
 
+logs := make(map[int64]*BioSnoopLog)
 
 it, err := txn.Get("biosnoop", "id")
 if err != nil {
@@ -633,11 +636,13 @@ if err != nil {
 }
 
 
-var logs []*BioSnoopLog
+//var logs []*BioSnoopLog
 
 for  obj := it.Next(); obj != nil; obj = it.Next() {
 	p := obj.(*BioSnoopLog)
-	logs = append(logs, p)
+	timestamp := p.TimeStamp
+	logs[timestamp] = p
+//	logs = append(logs, p)
 }
 
 return logs
@@ -647,12 +652,12 @@ return logs
 
 //Get Cachestat logs
 
-func GetCacheStatLogs() ([]*CacheStatLog){
+func GetCacheStatLogs() (map[int64]*CacheStatLog){
 
 txn := cs.Txn(false)
 defer txn.Abort()
 
-
+logs := make(map[int64]*CacheStatLog)
 
 it, err := txn.Get("cachestat", "id")
 if err != nil {
@@ -660,11 +665,13 @@ if err != nil {
 }
 
 
-var logs []*CacheStatLog
+//var logs []*CacheStatLog
 
 for  obj := it.Next(); obj != nil; obj = it.Next() {
 	p := obj.(*CacheStatLog)
-	logs = append(logs, p)
+	timestamp := p.TimeStamp
+	logs[timestamp] = p
+//	logs = append(logs, p)
 }
 
 return logs

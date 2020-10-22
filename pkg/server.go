@@ -272,9 +272,18 @@ func GetActiveLogs(pn string) string {
 			log.Panic(err)
 		}
 
+		for k := range logs {
+
+			keys = append(keys, k)
+
+		}
 
 
-		for _, val := range logs {
+		sortkeys.Int64s(keys)
+
+
+		for _, log := range keys {
+			val := logs[log]
                 	bsLogs = append(bsLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | T:%s | PNAME:%s | PID:%s | DISK:%s | R/W:%s | SECTOR:%s | BYTES:%s | LAT:%s \n", val.ProbeName,val.Sys_Time,val.T,val.Pname,val.Pid,val.Disk, val.Rw, val.Sector, val.Bytes, val.Lat))
 
 		}
@@ -288,9 +297,18 @@ func GetActiveLogs(pn string) string {
 			log.Panic(err)
 		}
 
+		for k := range logs {
+
+			keys = append(keys, k)
+
+		}
 
 
-		for _, val := range logs {
+		sortkeys.Int64s(keys)
+
+
+		for _, log := range keys {
+			val := logs[log]
                 	csLogs = append(csLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | PID:%s | UID:%s | CMD:%s | HITS:%s | MISS:%s | DIRTIES:%s | READ_HIT%:%s | WRITE_HIT%:%s \n", val.ProbeName,val.Sys_Time,val.Pid,val.Uid, val.Cmd, val.Hits, val.Miss, val.Dirties, val.Read_hit, val.Write_hit))
 
 		}
@@ -304,7 +322,18 @@ func GetActiveLogs(pn string) string {
 			log.Panic(err)
 		}
 
-		for _, val := range logs {
+		for k := range logs {
+
+			keys = append(keys, k)
+
+		}
+
+
+		sortkeys.Int64s(keys)
+
+
+		for _, log := range keys {
+			val := logs[log]
 			if val.ProbeName == "tcpconnect"{
 		                tcpLogs = append(tcpLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s |T:%s | PID:%s | PNAME:%s | IP:%s | SADDR:%s | DADDR:%s | DPORT:%s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Dport))
                 	}else if val.ProbeName == "tcptracer"{
