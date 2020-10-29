@@ -102,8 +102,20 @@ func (s *StreamServer)RouteLog(stream pb.SentLog_RouteLogServer) error {
 									  Ms:	    parse[10],
 									 })
 		}else if r.ProbeName == "execsnoop"{
+			if len(parse) < 8 {
+				events.PublishEvent("log:execsnoop", events.ExecSnoopLogEvent{TimeStamp: 0,
+                                                                          ProbeName:r.ProbeName,
+                                                                          Sys_Time: parse[0],
+                                                                          T:        parse[1],
+                                                                          Pname:    parse[3],
+                                                                          Pid:      parse[4],
+                                                                          Ppid:     parse[5],
+                                                                          Ret:      parse[6],
+                                                                          Args:     parse[3],
+                                                                         })
 
-			events.PublishEvent("log:execsnoop", events.ExecSnoopLogEvent{TimeStamp: 0,
+			}else{
+				events.PublishEvent("log:execsnoop", events.ExecSnoopLogEvent{TimeStamp: 0,
 									  ProbeName:r.ProbeName,
 									  Sys_Time: parse[0],
 									  T:	    parse[1],
@@ -113,6 +125,7 @@ func (s *StreamServer)RouteLog(stream pb.SentLog_RouteLogServer) error {
 									  Ret:      parse[6],
 									  Args:     parse[7],
 									 })
+			}
 		}else if r.ProbeName == "biosnoop"{
 
 			events.PublishEvent("log:biosnoop", events.BioSnoopLogEvent{TimeStamp: 0,
