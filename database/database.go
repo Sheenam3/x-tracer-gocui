@@ -4,7 +4,7 @@ package database
 import (
 	memdb "github.com/hashicorp/go-memdb"
 	"time"
-//	"fmt"
+	"fmt"
 //	"os"
 )
 
@@ -402,7 +402,7 @@ if err != nil {
 	panic(err)
 }
 
-//Create a new data base for cacahestat
+//Create a new data base for cachestat
 cs, err = memdb.NewMemDB(schemacs)
 if err != nil {
 	panic(err)
@@ -521,7 +521,7 @@ logs := []*CacheStatLog{
 for _, p := range logs {
 	if err := txn.Insert("cachestat", p); err!= nil{
 		return err
-	}	
+	}
 }
 
 txn.Commit()
@@ -677,3 +677,54 @@ for  obj := it.Next(); obj != nil; obj = it.Next() {
 return logs
 }
 
+
+func DeleteTcpLogs() int{
+
+txn := db.Txn(true)
+
+del, err := txn.DeleteAll("tcpconnect","id")
+if err != nil {
+	panic(err)
+}
+
+txn.Commit()
+
+return del
+
+}
+
+
+
+func DeleteESLogs() int{
+
+txn := db.Txn(true)
+
+del, err := txn.DeleteAll("execsnoop","id")
+if err != nil {
+	fmt.Println("cache")
+	return 0
+	panic(err)
+}
+
+txn.Commit()
+
+return del
+
+}
+
+func DeleteCSLogs() int{
+
+txn := db.Txn(true)
+
+del, err := txn.DeleteAll("cachestat","id")
+if err != nil {
+	fmt.Println("cache")
+	return 0
+	panic(err)
+}
+
+txn.Commit()
+
+return del
+
+}

@@ -6,6 +6,7 @@ import (
 	"github.com/Sheenam3/x-tracer-gocui/pkg"
 	"github.com/Sheenam3/x-tracer-gocui/events"
 	//"log"
+
 )
 
 func refreshIntegratedLogs(e events.Event) {
@@ -84,7 +85,6 @@ func refreshIntegratedLogs(e events.Event) {
                                 view.Clear()
 
                                 _, _ = fmt.Fprint(view, pkg.GetActiveLogs(pn))
-
                                 g.SetViewOnTop("tcplogs")
 //                                g.SetCurrentView("tcplogs")
 

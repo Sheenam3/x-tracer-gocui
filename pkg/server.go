@@ -24,6 +24,17 @@ var (
 	port    string
 )
 
+var bufLogs []string
+var wbLogs []string
+var csbufLogs []string
+var cswbLogs []string
+//var bsbufLogs []string
+//var bswbLogs []string
+var esbufLogs []string
+var eswbLogs []string
+//var tlbufLogs []string
+//var tlwbLogs []string*/
+
 func (s *StreamServer)RouteLog(stream pb.SentLog_RouteLogServer) error {
 	for {
 		r, err := stream.Recv()
@@ -225,6 +236,7 @@ func GetActiveLogs(pn string) string {
 
 	var keys []int64
 
+
 	if pn == "tcplife"{
 		var tlLogs []string
 		logs := database.GetTcpLifeLogs()
@@ -275,7 +287,23 @@ func GetActiveLogs(pn string) string {
 			esLogs = append(esLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | T:%s | PNAME:%s | PID:%s | PPID:%s | RET:%s | ARGS:%s \n", val.ProbeName,val.Sys_Time,val.T,val.Pname,val.Pid,val.Ppid, val.Ret, val.Args))
 
 		}
-		return strings.Join(esLogs, "\n")
+		for i := range esLogs {
+			esbufLogs = append(esbufLogs,esLogs[i])
+		}
+		if len(esbufLogs) >= 9{
+
+			eswbLogs = esbufLogs
+			esbufLogs = nil
+			del := database.DeleteESLogs()
+			return strings.Join(eswbLogs, "\n")
+			fmt.Println(del)
+		}else{
+
+				return strings.Join(eswbLogs, "\n")
+
+		}
+
+	//	return strings.Join(esLogs, "\n")
 
 	}else if pn == "biosnoop"{
 		var bsLogs []string
@@ -325,10 +353,29 @@ func GetActiveLogs(pn string) string {
                 	csLogs = append(csLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | PID:%s | UID:%s | CMD:%s | HITS:%s | MISS:%s | DIRTIES:%s | READ_HIT%:%s | WRITE_HIT%:%s \n", val.ProbeName,val.Sys_Time,val.Pid,val.Uid, val.Cmd, val.Hits, val.Miss, val.Dirties, val.Read_hit, val.Write_hit))
 
 		}
-		return strings.Join(csLogs, "\n")
+
+
+		for i := range csLogs {
+                                csbufLogs = append(csbufLogs,csLogs[i])
+                        }
+                        if len(csbufLogs) >= 9{
+
+                                cswbLogs = csbufLogs
+                                csbufLogs = nil
+                                del := database.DeleteCSLogs()
+                                return strings.Join(cswbLogs, "\n")
+                                fmt.Println(del)
+                        }else{
+
+                                return strings.Join(cswbLogs, "\n")
+
+                        }
+
+		//return strings.Join(csLogs, "\n")
 
 	}else{
 		var tcpLogs []string
+		//queue := list.New()
 		logs := database.GetLogs()
 
 		if err != nil {
@@ -349,15 +396,46 @@ func GetActiveLogs(pn string) string {
 			val := logs[log]
 			if val.ProbeName == "tcpconnect"{
 		                tcpLogs = append(tcpLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s |T:%s | PID:%s | PNAME:%s | IP:%s | SADDR:%s | DADDR:%s | DPORT:%s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Dport))
+
                 	}else if val.ProbeName == "tcptracer"{
-		                tcpLogs = append(tcpLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s |T:%s | PID:%s | PNAME:%s | IP:%s | SADDR:%s | DADDR:%s | DPORT:%s | SPORT:%s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Dport, val.Sport))
+		                tcpLogs = append(tcpLogs,fmt.Sprintf("{Probe:%s |Sys_Time:%s |T:%s | PID:%s | PNAME:%s | IP:%s | SADDR:%s | DADDR:%s | DPORT:%s | SPORT:%s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Dport, val.Sport))
+
+
                 	}else if val.ProbeName == "tcpaccept"{
 		                tcpLogs = append(tcpLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s |T:%s | PID:%s | PNAME:%s | IP:%s | LADDR:%s | RADDR:%s | LPORT:%s |RPORT: %s \n", val.ProbeName,val.Sys_Time,val.T, val.Pid,val.Pname, val.Ip, val.Saddr, val.Daddr, val.Sport, val.Dport))
 			}
 		}
 
-		return strings.Join(tcpLogs, "\n")
+
+
+/*		if len(tcpLogs) > 10{
+
+		//fmt.Println(tcpLogs)
+
+			del := database.DeleteTcpLogs()
+			return strings.Join(tcpLogs, "\n")
+			fmt.Println(del)
+
+		}else{*/
+			for i := range tcpLogs {
+				bufLogs = append(bufLogs,tcpLogs[i])
+			}
+			if len(bufLogs) >= 9{
+
+				wbLogs = bufLogs
+				bufLogs = nil
+				del := database.DeleteTcpLogs()
+				return strings.Join(wbLogs, "\n")
+				fmt.Println(del)
+			}else{
+
+				return strings.Join(wbLogs, "\n")
+
+			}
+	//	}
+
 	}
+
 	return "Nothing yet"
 
 }

@@ -316,9 +316,9 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 			logexecsnoop := make(chan pp.Log, 1)
 			go pp.RunExecsnoop(probename[0], logexecsnoop, pidList[0][0])
 			go func() {
-
+			
 				for val := range logexecsnoop {
-				
+							fmt.Println("execsnoop", val.Fulllog)	
 							err = c.startLogStream(client, &pb.Log{
 								Pid:       1234,
 								ProbeName: val.Probe,
