@@ -471,7 +471,7 @@ func viewProbeNames(g *gocui.Gui){
 
 func getProbeNames()[]string{
 
-	pn := []string {"tcptracer", "tcpconnect", "tcpaccept", "tcplife", "execsnoop", "biosnoop", "cachestat", "All Probes"}
+	pn := []string {"tcptracer", "tcpconnect", "tcpaccept", "tcplife", "execsnoop", "biosnoop", "cachestat", "All TCP Probes","All Probes"}
 	return pn
 
 }

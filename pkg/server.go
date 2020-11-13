@@ -11,7 +11,7 @@ import (
 	"io"
 	"log"
 	"net"
-
+//	"os"
 	)
 
 
@@ -32,8 +32,8 @@ var cswbLogs []string
 //var bswbLogs []string
 var esbufLogs []string
 var eswbLogs []string
-//var tlbufLogs []string
-//var tlwbLogs []string*/
+var tlbufLogs []string
+var tlwbLogs []string
 
 func (s *StreamServer)RouteLog(stream pb.SentLog_RouteLogServer) error {
 	for {
@@ -262,7 +262,25 @@ func GetActiveLogs(pn string) string {
                 	tlLogs = append(tlLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | PID:%s | PNAME:%s | LADDR:%s | LPORT:%s | RADDR:%s | RPORT:%s | Tx_kb:%s | Rx_kb:%s | Ms: %s \n", val.ProbeName,val.Sys_Time,val.Pid,val.Pname, val.Laddr, val.Lport, val.Raddr, val.Rport, val.Tx_kb, val.Rx_kb, val.Ms))
 
 		}
-		return strings.Join(tlLogs, "\n")
+
+
+			for i := range tlLogs {
+				tlbufLogs = append(tlbufLogs,tlLogs[i])
+			}
+			if len(tlbufLogs) >= 9{
+
+				tlwbLogs = tlbufLogs
+				tlbufLogs = nil
+				del := database.DeleteTlLogs()
+				return strings.Join(tlwbLogs, "\n")
+				fmt.Println(del)
+			}else{
+
+				return strings.Join(tlwbLogs, "\n")
+
+			}
+
+		//return strings.Join(tlLogs, "\n")
 
 	}else if pn == "execsnoop"{
 		var esLogs []string
@@ -287,6 +305,7 @@ func GetActiveLogs(pn string) string {
 			esLogs = append(esLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | T:%s | PNAME:%s | PID:%s | PPID:%s | RET:%s | ARGS:%s \n", val.ProbeName,val.Sys_Time,val.T,val.Pname,val.Pid,val.Ppid, val.Ret, val.Args))
 
 		}
+
 		for i := range esLogs {
 			esbufLogs = append(esbufLogs,esLogs[i])
 		}
@@ -346,11 +365,22 @@ func GetActiveLogs(pn string) string {
 
 
 		sortkeys.Int64s(keys)
-
+/*		f, err := os.OpenFile("cache_db_del.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+			    if err != nil {
+        			fmt.Println(err)
+        			return "file open error"
+    			}
+		defer f.Close()*/
 
 		for _, log := range keys {
 			val := logs[log]
                 	csLogs = append(csLogs, fmt.Sprintf("{Probe:%s |Sys_Time:%s | PID:%s | UID:%s | CMD:%s | HITS:%s | MISS:%s | DIRTIES:%s | READ_HIT%:%s | WRITE_HIT%:%s \n", val.ProbeName,val.Sys_Time,val.Pid,val.Uid, val.Cmd, val.Hits, val.Miss, val.Dirties, val.Read_hit, val.Write_hit))
+			/* _, err := f.WriteString(fmt.Sprintf("{Probe:%s |Sys_Time:%s | PID:%s | UID:%s | CMD:%s | HITS:%s | MISS:%s | DIRTIES:%s | READ_HIT%:%s | WRITE_HIT%:%s \n", val.ProbeName,val.Sys_Time,val.Pid,val.Uid, val.Cmd, val.Hits, val.Miss, val.Dirties, val.Read_hit, val.Write_hit))
+			    if err != nil {
+			        fmt.Println(err)
+			        f.Close()
+		        	return "file writing error"
+    		    	    }*/
 
 		}
 

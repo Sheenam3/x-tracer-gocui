@@ -678,12 +678,50 @@ return logs
 }
 
 
+
 func DeleteTcpLogs() int{
 
 txn := db.Txn(true)
 
 del, err := txn.DeleteAll("tcpconnect","id")
 if err != nil {
+	panic(err)
+	return 0
+}
+
+txn.Commit()
+
+return del
+
+}
+
+
+
+func DeleteTlLogs() int{
+
+txn := tldb.Txn(true)
+
+del, err := txn.DeleteAll("tcplife","id")
+if err != nil {
+	fmt.Println("TCPLOGS DELETION ERROR")
+	//panic(err)
+	return 0
+}
+
+txn.Commit()
+
+return del
+
+}
+
+func DeleteCSLogs() int{
+
+txn := cs.Txn(true)
+
+del, err := txn.DeleteAll("cachestat","id")
+if err != nil {
+	fmt.Println("cache")
+	return 0
 	panic(err)
 }
 
@@ -697,29 +735,10 @@ return del
 
 func DeleteESLogs() int{
 
-txn := db.Txn(true)
+txn := es.Txn(true)
 
 del, err := txn.DeleteAll("execsnoop","id")
 if err != nil {
-	fmt.Println("cache")
-	return 0
-	panic(err)
-}
-
-txn.Commit()
-
-return del
-
-}
-
-func DeleteCSLogs() int{
-
-txn := db.Txn(true)
-
-del, err := txn.DeleteAll("cachestat","id")
-if err != nil {
-	fmt.Println("cache")
-	return 0
 	panic(err)
 }
 

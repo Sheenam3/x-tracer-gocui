@@ -447,6 +447,23 @@ func startAgent(g *gocui.Gui, p string, o io.Writer, probes string) error {
 		agent.SetupCloseHandler()
 
 
+	}else if probes == "All TCP Probes"{
+		pn := getTcpProbeNames()
+		tcppn := strings.Join(pn, ",")
+		agent := agentmanager.New(containerId[0], targetNode, nodeIp, cs, tcppn)
+
+                //Start x-agent Pod
+                fmt.Fprintln(o, "Starting x-agent Pod...")
+
+                agent.ApplyAgentPod()
+
+                fmt.Fprintln(o, "Starting x-agent Service...")
+                agent.ApplyAgentService()
+
+                agent.SetupCloseHandler()
+
+
+
 	}else{
 		agent := agentmanager.New(containerId[0], targetNode, nodeIp, cs, probes)
 
@@ -470,3 +487,10 @@ func startAgent(g *gocui.Gui, p string, o io.Writer, probes string) error {
 
 
 
+func getTcpProbeNames() []string{
+
+        pn := []string {"tcptracer", "tcpconnect", "tcpaccept"}
+        return pn
+
+
+}

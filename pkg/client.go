@@ -42,7 +42,7 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 	//ctx, _ = context.WithCancel(context.TODO())
 
 	
-	if len(probename) > 1 {
+	if len(probename) > 3 {
 
 	Integ = true
 	logtcpconnect := make(chan pp.Log, 1)
@@ -203,6 +203,88 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
                 }
 
         }()
+
+	}else if len(probename) == 3 {
+
+
+	logtcpconnect := make(chan pp.Log, 1)
+
+	go pp.RunTcpconnect(probename[1], logtcpconnect, pidList[0][0])
+
+	go func() {
+
+		for val := range logtcpconnect {
+
+			/*for j := range pidList {
+				for k := range pidList[j] {
+					if strconv.FormatUint(uint64(val.Pid), 10) == pidList[j][k] {*/
+						//log.Printf("PID: %d", pidList[j][k])
+						//str_pid := strconv.FormatInt(val.Pid, 10)
+/*						events.PublishEvent("log:send", events.SendLogEvent{Pid: val.Pid,
+							    ProbeName: val.Probe,
+							    Log: val.Fulllog,
+							    TimeStamp: "TimeStamp",
+							    })*/
+						//Pid := strconv.FormatUint(uint64(val.Pid))
+						err = c.startLogStream(client, &pb.Log{
+							Pid:       1234,
+							ProbeName: val.Probe,
+							Log:       val.Fulllog,
+							TimeStamp: "TimeStamp",
+						})
+						if err != nil {
+							log.Fatalf("startLogStream fail.err: %v", err)
+						}
+
+					//}
+				//}
+			//}
+		}
+
+	}()
+	
+	logtcptracer := make(chan pp.Log, 1)
+	go pp.RunTcptracer(probename[0], logtcptracer, pidList[0][0])
+	go func() {
+
+		for val := range logtcptracer {
+			log.Printf("logtcptracer")
+						err = c.startLogStream(client, &pb.Log{
+							Pid:       1234,
+							ProbeName: val.Probe,
+							Log:       val.Fulllog,
+							TimeStamp: "TimeStamp",
+						})
+						if err != nil {
+							log.Fatalf("startLogStream fail.err: %v", err)
+						}
+					
+				
+			
+		}
+
+	}()
+
+
+	logtcpaccept := make(chan pp.Log, 1)
+	go pp.RunTcpaccept(probename[2], logtcpaccept, pidList[0][0])
+	go func() {
+
+		for val := range logtcpaccept {
+						err = c.startLogStream(client, &pb.Log{
+							Pid:       1234,
+							ProbeName: val.Probe,
+							Log:       val.Fulllog,
+							TimeStamp: "TimeStamp",
+						})
+						if err != nil {
+							log.Fatalf("startLogStream fail.err: %v", err)
+						}
+				
+			
+		}
+
+	}()
 
 	}else {
 

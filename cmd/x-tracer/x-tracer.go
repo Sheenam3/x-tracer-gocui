@@ -25,7 +25,7 @@ func main() {
 
 
 	port := flag.String("port", "6666", "")
-       /* server := */pkg.SetPort(*port)
+	pkg.SetPort(*port)
         go pkg.StartServer()
 
         ui.InitGui()
