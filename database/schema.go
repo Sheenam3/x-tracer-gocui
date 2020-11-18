@@ -40,10 +40,6 @@ type TcpLog struct {
 	Daddr     string
 	Dport     string
 	Sport     string
-	//	Tx_kb	string
-	//	Rx_kb	string
-	//	Ms	string
-
 }
 
 type ExecSnoopLog struct {

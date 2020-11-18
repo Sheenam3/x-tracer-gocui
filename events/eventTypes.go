@@ -15,9 +15,6 @@ type ReceiveLogEvent struct {
 	Daddr     string
 	Dport     string
 	Sport     string
-	//	Tx_kb string
-	//	Rx_kb string
-	//	Ms    string
 }
 
 type TcpLifeLogEvent struct {

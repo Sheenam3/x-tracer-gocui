@@ -4,7 +4,6 @@ import (
 	"github.com/Sheenam3/x-tracer-gocui/database"
 	"github.com/Sheenam3/x-tracer-gocui/events"
 	"os"
-	//	"fmt"
 )
 
 func receiveLog(e events.Event) {

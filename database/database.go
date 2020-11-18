@@ -4,7 +4,6 @@ import (
 	"fmt"
 	memdb "github.com/hashicorp/go-memdb"
 	"time"
-	//	"os"
 )
 
 var (
@@ -388,13 +387,13 @@ func Init() {
 
 }
 
-//func UpdateLogs(pn string, st string, t string, pid string, pname string, ip string, saddr string, daddr string, dport string) error{
+
 func UpdateLogs(log TcpLog) error {
 
 	txn := db.Txn(true)
 	timestamp := time.Now().UnixNano()
 	logs := []*Log{
-		//&Log{timestamp,pn, st, t, pid, pname, ip, saddr, daddr, dport},
+
 		{timestamp, log.ProbeName, log.Sys_Time, log.T, log.Pid, log.Pname, log.Ip, log.Saddr, log.Daddr, log.Dport, log.Sport},
 	}
 
@@ -415,7 +414,7 @@ func UpdateTcpLifeLogs(log TcpLifeLog) error {
 	txn := tldb.Txn(true)
 	timestamp := time.Now().UnixNano()
 	logs := []*TcpLifeLog{
-		//&Log{timestamp,pn, st, t, pid, pname, ip, saddr, daddr, dport},
+
 		{timestamp, log.ProbeName, log.Sys_Time, log.Pid, log.Pname, log.Laddr, log.Lport, log.Raddr, log.Rport, log.Tx_kb, log.Rx_kb, log.Ms},
 	}
 
@@ -460,7 +459,7 @@ func UpdateBsLogs(log BioSnoopLog) error {
 	txn := bs.Txn(true)
 	timestamp := time.Now().UnixNano()
 	logs := []*BioSnoopLog{
-		//&Log{timestamp,pn, st, t, pid, pname, ip, saddr, daddr, dport},
+
 		{timestamp, log.ProbeName, log.Sys_Time, log.T, log.Pname, log.Pid, log.Disk, log.Rw, log.Sector, log.Bytes, log.Lat},
 	}
 
@@ -510,13 +509,13 @@ func GetLogs() map[int64]*Log {
 		panic(err)
 	}
 
-	//var logs []*Log
+
 
 	for obj := it.Next(); obj != nil; obj = it.Next() {
 		p := obj.(*Log)
 		timestamp := p.Timestamp
 		logs[timestamp] = p
-		//	logs = append(logs, p)
+
 	}
 
 	return logs
@@ -534,13 +533,13 @@ func GetTcpLifeLogs() map[int64]*TcpLifeLog {
 		panic(err)
 	}
 
-	//var logs []*TcpLifeLog
+
 
 	for obj := it.Next(); obj != nil; obj = it.Next() {
 		p := obj.(*TcpLifeLog)
 		timestamp := p.TimeStamp
 		logs[timestamp] = p
-		//	logs = append(logs, p)
+
 	}
 
 	return logs
@@ -561,13 +560,13 @@ func GetExecSnoopLogs() map[int64]*ExecSnoopLog {
 		//os.Exit(1)
 	}
 
-	//var logs []*ExecSnoopLog
+
 
 	for obj := it.Next(); obj != nil; obj = it.Next() {
 		p := obj.(*ExecSnoopLog)
 		timestamp := p.TimeStamp
 		logs[timestamp] = p
-		//	logs = append(logs, p)
+
 	}
 
 	return logs
@@ -588,13 +587,13 @@ func GetBioSnoopLogs() map[int64]*BioSnoopLog {
 		panic(err)
 	}
 
-	//var logs []*BioSnoopLog
+
 
 	for obj := it.Next(); obj != nil; obj = it.Next() {
 		p := obj.(*BioSnoopLog)
 		timestamp := p.TimeStamp
 		logs[timestamp] = p
-		//	logs = append(logs, p)
+
 	}
 
 	return logs
@@ -614,13 +613,13 @@ func GetCacheStatLogs() map[int64]*CacheStatLog {
 		panic(err)
 	}
 
-	//var logs []*CacheStatLog
+
 
 	for obj := it.Next(); obj != nil; obj = it.Next() {
 		p := obj.(*CacheStatLog)
 		timestamp := p.TimeStamp
 		logs[timestamp] = p
-		//	logs = append(logs, p)
+
 	}
 
 	return logs
@@ -649,7 +648,7 @@ func DeleteTlLogs() int {
 	del, err := txn.DeleteAll("tcplife", "id")
 	if err != nil {
 		fmt.Println("TCPLOGS DELETION ERROR")
-		//panic(err)
+
 		return 0
 	}
 
@@ -665,7 +664,7 @@ func DeleteCSLogs() int {
 
 	del, err := txn.DeleteAll("cachestat", "id")
 	if err != nil {
-		fmt.Println("cache")
+
 		return 0
 		panic(err)
 	}

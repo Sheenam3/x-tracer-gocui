@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
 	"github.com/jroimartin/gocui"
 	"github.com/willf/pad"
 )
@@ -61,7 +60,6 @@ func viewInfo(g *gocui.Gui, lMaxX int, lMaxY int) error {
 		//content
 		fmt.Fprintln(v, textPadCenter("hello", lMaxX))
 		g.SetCurrentView(v.Name())
-		//fmt.Fprintln(v, info())
 	}
 
 	return nil
@@ -77,26 +75,7 @@ func viewLogs(g *gocui.Gui, lMaxX int, lMaxY int) error {
 		v.Autoscroll = false
 
 		v.SetCursor(1, 3)
-
-		// Settings
 	}
-
-	/*	// Containers view
-		minX := int(lMaxX/5) * 4
-		minY := 2
-		maxX := lMaxX - 4
-		maxY := int(lMaxY / 5)
-		if v, err := g.SetView("logs-containers", minX, minY, maxX, maxY); err != nil {
-			if err != gocui.ErrUnknownView {
-				return err
-			}
-
-			// Settings
-			v.Frame = true
-			v.BgColor = gocui.ColorBlack
-			v.Highlight = true
-		}*/
-
 	return nil
 }
 
@@ -200,7 +179,6 @@ func viewNamespaces(g *gocui.Gui, lMaxX int, lMaxY int) error {
 // Actualize list in namespaces view
 func viewNamespacesRefreshList(g *gocui.Gui) {
 	g.Update(func(g *gocui.Gui) error {
-		//debug(g, "View namespaces: Actualize")
 		v, err := g.View("namespaces")
 		if err != nil {
 			return err
@@ -218,13 +196,12 @@ func viewNamespacesRefreshList(g *gocui.Gui) {
 		v.Clear()
 
 		if len(namespaces.Items) > 0 {
-			//	debug(g, fmt.Sprintf("View namespaces: %d namespaces found", len(namespaces.Items)))
 			for _, namespace := range namespaces.Items {
 				fmt.Fprintln(v, namespace.GetName())
 				ns = append(ns, namespace.GetName())
 			}
 		} else {
-			//debug(g, "View namespaces: Namespaces not found")
+
 		}
 
 		setViewCursorToLine(g, v, ns, NAMESPACE)
@@ -266,7 +243,6 @@ func viewPodsShowWithAutoRefresh(g *gocui.Gui) {
 	for {
 		select {
 		case <-t.C:
-			//	debug(g, fmt.Sprintf("View pods: Refreshing (%ds)", c.frequency))
 			go viewPodsRefreshList(g)
 		}
 	}
@@ -276,7 +252,6 @@ func viewPodsShowWithAutoRefresh(g *gocui.Gui) {
 func viewPodsRefreshList(g *gocui.Gui) {
 	g.Update(func(g *gocui.Gui) error {
 		lMaxX, _ := g.Size()
-		//debug(g, "View pods: Actualize")
 		v, err := g.View("pods")
 		if err != nil {
 			return err
@@ -292,12 +267,10 @@ func viewPodsRefreshList(g *gocui.Gui) {
 		v.Clear()
 
 		// Content: Add column
-		//viewPodsAddLine(v, lMaxX, "NAME", "CPU", "MEMORY", "READY", "STATUS", "RESTARTS", "AGE") // TODO CPU + Memory #20
 		viewPodsAddLine(v, lMaxX, "NAME", "READY", "STATUS", "RESTARTS", "AGE")
 		fmt.Fprintln(v, strings.Repeat("─", lMaxX))
 
 		if len(pods.Items) > 0 {
-			//	debug(g, fmt.Sprintf("View pods: %d pods found", len(pods.Items)))
 			for _, pod := range pods.Items {
 				n := pod.GetName()
 				//c := "?" // TODO CPU + Memory #20
@@ -307,7 +280,6 @@ func viewPodsRefreshList(g *gocui.Gui) {
 				a := columnHelperAge(pod.CreationTimestamp)
 				cr := columnHelperReady(pod.Status.ContainerStatuses)
 				viewPodsAddLine(v, lMaxX, n, cr, s, r, a)
-				//viewPodsAddLine(v, lMaxX, n, c, m, cr, s, r, a) // TODO CPU + Memory #20
 			}
 
 			// Reset cursor when empty line
@@ -316,7 +288,6 @@ func viewPodsRefreshList(g *gocui.Gui) {
 			}
 		} else {
 			v.SetCursor(0, 2)
-			//	debug(g, "View pods: Pods not found")
 		}
 
 		return nil
@@ -427,11 +398,7 @@ func viewProbeNames(g *gocui.Gui) {
 		if err != nil {
 			return err
 		}
-
 		probes := getProbeNames()
-
-		//var pn []string
-
 		v.Clear()
 
 		if len(probes) >= 0 {
