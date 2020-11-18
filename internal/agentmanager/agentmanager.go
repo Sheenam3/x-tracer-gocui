@@ -16,17 +16,20 @@ type agent struct {
 	targetNodeId      string
 	masterIp          string
 	clientSet *kubernetes.Clientset
+	probes		  string
 }
 
 var podObj *v1.Pod
 var svcObj *v1.Service
 
-func New(containerId string, nodeId string, masterIp string, clientSet *kubernetes.Clientset) *agent {
+var C chan bool
+
+func New(containerId string, nodeId string, masterIp string, clientSet *kubernetes.Clientset, probes string) *agent {
 	return &agent{
 		containerId,
 		nodeId,
 		masterIp,
-		clientSet}
+		clientSet, probes}
 }
 
 func (a *agent) getAgentService() *v1.Service {
@@ -57,7 +60,7 @@ func (a *agent) getAgentService() *v1.Service {
 func (a *agent) getAgentPodObject() *v1.Pod {
 	t := true
 	var user int64 = 0
-	net := "tcptracer,tcpconnect,tcpaccept,tcplife,execsnoop,biosnoop,cachetop"
+//	net := "tcptracer,tcpconnect,tcpaccept,tcplife,execsnoop,biosnoop,cachetop"
 	//var pathType = v1.HostPathDirectory
 	return &v1.Pod{
 		TypeMeta: metav1.TypeMeta{
@@ -103,7 +106,7 @@ func (a *agent) getAgentPodObject() *v1.Pod {
 						},
 						{
 							Name:  "tools",
-							Value: net,
+							Value: a.probes,
 						},
 						{
 							Name:  "masterIp",
@@ -196,6 +199,7 @@ func (a *agent) ApplyAgentService() {
 func (a *agent) SetupCloseHandler() {
 	c := make(chan os.Signal, 2)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	//C = make(chan bool)
 	go func() {
 		<-c
 		_ = a.clientSet.CoreV1().Pods(podObj.Namespace).Delete(podObj.Name, &metav1.DeleteOptions{})

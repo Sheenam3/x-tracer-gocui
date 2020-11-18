@@ -67,12 +67,6 @@ func viewInfo(g *gocui.Gui, lMaxX int, lMaxY int) error {
 
 	return nil
 }
-/*
-func info() string{
-
-return fmt.Sprintf("fuckoff")
-}
-*/
 
 
 
@@ -82,12 +76,15 @@ func viewLogs(g *gocui.Gui, lMaxX int, lMaxY int) error {
 			return err
 		}
 
-		// Settings
 		v.Title = " Logs "
-		v.Autoscroll = true
+		v.Autoscroll = false
+
+		v.SetCursor(1,3)
+
+		// Settings
 	}
 
-	// Containers view
+/*	// Containers view
 	minX := int(lMaxX/5) * 4
 	minY := 2
 	maxX := lMaxX - 4
@@ -101,10 +98,85 @@ func viewLogs(g *gocui.Gui, lMaxX int, lMaxY int) error {
 		v.Frame = true
 		v.BgColor = gocui.ColorBlack
 		v.Highlight = true
+	}*/
+
+	return nil
+}
+
+
+func viewTcpLogs(g *gocui.Gui, lMaxX int, lMaxY int) error {
+	if v, err := g.SetView("tcplogs", 1, 1, lMaxX/2, lMaxY/2); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+
+		v.Title = " Tcp Logs "
+		v.Autoscroll = true
+		v.Wrap = true
+
+		v.SetCursor(1,3)
+
+
 	}
 
 	return nil
 }
+
+func viewTcpLifeLogs(g *gocui.Gui, lMaxX int, lMaxY int) error {
+	if v, err := g.SetView("tcplife", lMaxX/2 , 1, lMaxX, lMaxY/2); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+
+		v.Title = " TcpLife "
+		v.Autoscroll = true
+		v.Wrap = true
+
+		v.SetCursor(1,3)
+
+
+	}
+
+	return nil
+}
+
+
+func viewExecSnoopLogs(g *gocui.Gui, lMaxX int, lMaxY int) error {
+	if v, err := g.SetView("execsnoop", 1, lMaxY/2 , lMaxX/2, lMaxY); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+
+		v.Title = " ExecSnoop "
+		v.Autoscroll = true
+		v.Wrap = true
+
+		v.SetCursor(1,3)
+
+
+	}
+
+	return nil
+}
+
+func viewCacheStatLogs(g *gocui.Gui, lMaxX int, lMaxY int) error {
+	if v, err := g.SetView("cachestat", lMaxX/2 , lMaxY/2, lMaxX, lMaxY); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+
+		v.Title = " CacheStats "
+		v.Autoscroll = true
+		v.Wrap = true
+
+		v.SetCursor(1,3)
+
+
+	}
+
+	return nil
+}
+
 
 // View: Namespace
 func viewNamespaces(g *gocui.Gui, lMaxX int, lMaxY int) error {
@@ -337,3 +409,76 @@ func viewPodsAddLine(v *gocui.View, maxX int, name, ready, status, restarts, age
 		pad.Right(age, 4, " ")
 	fmt.Fprintln(v, line)
 }
+
+
+
+func viewProbes(g *gocui.Gui, lMaxX int, lMaxY int) error {
+	w := lMaxX / 2
+	h := lMaxY / 4
+	minX := (lMaxX / 2) - (w / 2)
+	minY := (lMaxY / 2) - (h / 2)
+	maxX := minX + w
+	maxY := minY + h
+	// Main view
+	if v, err := g.SetView("probes", minX, minY, maxX, maxY); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		// Configure view
+		v.Title = " Select Probes "
+		v.Frame = true
+		v.Highlight = true
+		v.SelBgColor = gocui.ColorGreen
+		v.SelFgColor = gocui.ColorBlack
+		viewProbeNames(g)
+
+	}
+	return nil
+}
+
+
+func viewProbeNames(g *gocui.Gui){
+	g.Update(func(g *gocui.Gui) error {
+	
+		v, err := g.View("probes")
+		if err != nil {
+			return err
+		}
+
+
+		probes := getProbeNames()
+
+	//var pn []string
+
+	v.Clear()
+	
+	if len(probes) >= 0 {
+		for i, _ := range probes{
+			fmt.Fprintln(v, probes[i])
+		}
+	}else {
+	
+	}
+	
+	setViewCursorToLine(g, v, probes, "tcptracer")
+	
+	return nil
+	
+	})
+
+}
+
+
+func getProbeNames()[]string{
+
+	pn := []string {"tcptracer", "tcpconnect", "tcpaccept", "tcplife", "execsnoop", "biosnoop", "cachestat", "All TCP Probes","All Probes"}
+	return pn
+
+}
+
+
+
+
+
+
+

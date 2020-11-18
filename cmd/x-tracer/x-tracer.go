@@ -1,11 +1,13 @@
 package main
 
 import (
-
+	"flag"
         "github.com/Sheenam3/x-tracer-gocui/ui"
-        "github.com/Sheenam3/x-tracer-gocui/pkg/streamserver"
-        "log"
-        "time"
+        "github.com/Sheenam3/x-tracer-gocui/pkg"
+        "github.com/Sheenam3/x-tracer-gocui/database"
+        "github.com/Sheenam3/x-tracer-gocui/events"
+//        "log"
+ //       "time"
 
 )
 
@@ -13,17 +15,25 @@ import (
 
 func main() {
 
+	database.Init()
 
-        server := streamserver.New("6666")
-        go server.StartServer()
 
+	ui.SubscribeListeners()
+	pkg.SubscribeListeners()
+
+	go events.Run()
+
+
+	port := flag.String("port", "6666", "")
+	pkg.SetPort(*port)
+        go pkg.StartServer()
 
         ui.InitGui()
 
-        for {
+/*        for {
                 log.Println("From x-tracer- Sleeping")
                 time.Sleep(10 * time.Second)
-        }
+        }*/
 
 
 }

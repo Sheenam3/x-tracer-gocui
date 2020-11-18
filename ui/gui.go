@@ -24,6 +24,9 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 }
 
 
+var (
+	g	*gocui.Gui
+)
 
 
 
@@ -35,6 +38,7 @@ var NAMESPACE string = "default"
 // Configure globale keys
 var keys []Key = []Key{
 	Key{"", gocui.KeyCtrlC, actionGlobalQuit},
+	Key{"logs", gocui.KeyCtrlP, actionViewProbesList},
 //	Key{"", gocui.KeyCtrlD, actionGlobalToggleViewDebug},
 	Key{"pods", gocui.KeyCtrlN, actionGlobalToggleViewNamespaces},
 	Key{"pods", gocui.KeyArrowUp, actionViewPodsUp},
@@ -43,15 +47,20 @@ var keys []Key = []Key{
 	Key{"pods", gocui.KeyEnter, actionViewPodsSelect},
 	//Key{"logs", l, actionStreamLogs},
 //	Key{"logs", 'l', actionViewPodsLogsHide},
-//	Key{"logs", gocui.KeyArrowUp, actionViewPodsLogsUp},
-//	Key{"logs", gocui.KeyArrowDown, actionViewPodsLogsDown},
+	Key{"logs", gocui.KeyArrowUp, actionViewPodsLogsUp},
+	Key{"logs", gocui.KeyArrowDown,actionViewPodsLogsDown},
 	Key{"namespaces", gocui.KeyArrowUp, actionViewNamespacesUp},
 	Key{"namespaces", gocui.KeyArrowDown, actionViewNamespacesDown},
 	Key{"namespaces", gocui.KeyEnter, actionViewNamespacesSelect},
+	Key{"probes", gocui.KeyArrowUp, actionViewNamespacesUp},
+	Key{"probes", gocui.KeyArrowDown, actionViewNamespacesDown},
+	Key{"probes", gocui.KeyEnter, actionViewProbesSelect},
+
 }
 
 // Entry Point of the x-tracer
 func InitGui() {
+	var err error
 	c := getConfig()
 
 	// Ask version
@@ -70,26 +79,25 @@ func InitGui() {
 	// Only used to check errors
 	getClientSet()
 
-	G, err := gocui.NewGui(gocui.OutputNormal)
+	g, err = gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
 	}
-	defer G.Close()
+	defer g.Close()
 
-	G.Highlight = true
-	G.SelFgColor = gocui.ColorGreen
+	g.Highlight = true
+	g.SelFgColor = gocui.ColorGreen
 
-	G.SetManagerFunc(uiLayout)
+	g.SetManagerFunc(uiLayout)
 
-	if err := uiKey(G); err != nil {
+	if err := uiKey(g); err != nil {
 		log.Panicln(err)
 	}
 
-	if err := G.MainLoop(); err != nil && err != gocui.ErrQuit {
+	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
 	}
 }
-
 
 
 
@@ -99,7 +107,12 @@ func uiLayout(g *gocui.Gui) error {
 
 	//viewDebug(g, maxX, maxY)
 	viewLogs(g, maxX, maxY)
+	viewTcpLogs(g, maxX, maxY)
+	viewTcpLifeLogs(g, maxX, maxY)
+	viewExecSnoopLogs(g, maxX, maxY)
+	viewCacheStatLogs(g, maxX, maxY)
 	viewNamespaces(g, maxX, maxY)
+	viewProbes(g, maxX, maxY)
 	viewOverlay(g, maxX, maxY)
 	viewTitle(g, maxX, maxY)
 	viewPods(g, maxX, maxY)
@@ -226,36 +239,51 @@ func getSelectedPod(g *gocui.Gui) (string, error) {
 	return p, nil
 }
 
-// Show views logs
-func showViewPodsLogs(g *gocui.Gui) error {
-	vn := "logs"
+
+
+func showSelectProbe(g *gocui.Gui) error {
+	
 
 	switch LOG_MOD {
 	case "pod":
+		//Choose probe tool
+		g.SetViewOnTop("probes")
+		g.SetCurrentView("probes")
+		changeStatusContext(g,"SE")
+	}
+	return nil
+}
+// Show views logs
+func showViewPodsLogs(g *gocui.Gui) (*gocui.Gui,string,io.Writer) {
+	vn := "logs"
+
+	switch LOG_MOD {
+
+	case "probe":	
 		// Get current selected pod
 		p, err := getSelectedPod(g)
 		if err != nil {
-			return err
+			fmt.Println(err)
 		}
 
 		// Display pod containers
-		vLc, err := g.View(vn + "-containers")
+		/*vLc, err := g.View(vn + "-containers")
 		if err != nil {
 			return err
 		}
-		vLc.Clear()
+		vLc.Clear()*/
 		var conName []string
 		for _, c := range getPodContainersName(p) {
-			fmt.Fprintln(vLc, c)
+			//fmt.Fprintln(vLc, c)
 			conName = append(conName, c)
 		}
-		vLc.SetCursor(0, 0)
+		//vLc.SetCursor(0, 0)
 
 		//Display Container IDs
 
                 lv, err := g.View(vn)
                 if err != nil {
-                        return err
+                        fmt.Println(err)
                 }
                 lv.Clear()
 
@@ -266,7 +294,9 @@ func showViewPodsLogs(g *gocui.Gui) error {
 
 		fmt.Fprintln(lv, "Pod you choose is: " + p)
 
-		startAgent(g,p,lv)
+		return g,p,lv
+	
+//		startAgent(g,p,lv)
 		
 		
 		// Display logs
@@ -275,11 +305,11 @@ func showViewPodsLogs(g *gocui.Gui) error {
 
 
 //	debug(g, "Action: Show view logs")
-	g.SetViewOnTop(vn)
-	g.SetViewOnTop(vn + "-containers")
-	g.SetCurrentView(vn)
+	//g.SetViewOnTop(vn)
+	//g.SetViewOnTop(vn + "-containers")
+	//g.SetCurrentView(vn)
 
-	return nil
+	return nil,"ok",nil
 }
 
 // Refresh pods logs
@@ -382,10 +412,9 @@ func hideConfirmation(g *gocui.Gui) {
 
 
 
-func startAgent(g *gocui.Gui, p string, o io.Writer) error {
+func startAgent(g *gocui.Gui, p string, o io.Writer, probes string) error {
 	//vn := "logs"
 	cs := getClientSet()
-
 	var containerId []string
 
 	/*lv, err := g.View(vn)
@@ -401,20 +430,67 @@ func startAgent(g *gocui.Gui, p string, o io.Writer) error {
 
 	nodeIp := getNodeIp()
 
-	agent := agentmanager.New(containerId[0], targetNode, nodeIp, cs)
+	if probes == "All Probes"{
 
-	//Start x-agent Pod
-	fmt.Fprintln(o, "Starting x-agent Pod...")
+		pn := getProbeNames()
+		allpn := strings.Join(pn, ",")
+		agent := agentmanager.New(containerId[0], targetNode, nodeIp, cs, allpn)
 
-	agent.ApplyAgentPod()
+		//Start x-agent Pod
+		fmt.Fprintln(o, "Starting x-agent Pod...")
 
-	fmt.Fprintln(o, "Starting x-agent Service...")
-	agent.ApplyAgentService()
+		agent.ApplyAgentPod()
 
-	agent.SetupCloseHandler()
+		fmt.Fprintln(o, "Starting x-agent Service...")
+		agent.ApplyAgentService()
+
+		agent.SetupCloseHandler()
+
+
+	}else if probes == "All TCP Probes"{
+		pn := getTcpProbeNames()
+		tcppn := strings.Join(pn, ",")
+		agent := agentmanager.New(containerId[0], targetNode, nodeIp, cs, tcppn)
+
+                //Start x-agent Pod
+                fmt.Fprintln(o, "Starting x-agent Pod...")
+
+                agent.ApplyAgentPod()
+
+                fmt.Fprintln(o, "Starting x-agent Service...")
+                agent.ApplyAgentService()
+
+                agent.SetupCloseHandler()
+
+
+
+	}else{
+		agent := agentmanager.New(containerId[0], targetNode, nodeIp, cs, probes)
+
+		//Start x-agent Pod
+		fmt.Fprintln(o, "Starting x-agent Pod...")
+
+		agent.ApplyAgentPod()
+
+		fmt.Fprintln(o, "Starting x-agent Service...")
+		agent.ApplyAgentService()
+
+		agent.SetupCloseHandler()
+
+
+	}
+
 
 	return nil
 }
 
 
 
+
+func getTcpProbeNames() []string{
+
+        pn := []string {"tcptracer", "tcpconnect", "tcpaccept"}
+        return pn
+
+
+}
