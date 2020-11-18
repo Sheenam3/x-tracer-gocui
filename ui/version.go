@@ -2,13 +2,12 @@ package ui
 
 import (
 	"fmt"
-
 	"github.com/willf/pad"
 )
 
 var HELP = `
 x-tracer monitors the Pods on your Kubernetes cluster.
-Find more information at https://github.com/sheenam3/x-tracer.
+Find more information at https://github.com/sheenam3/x-tracer-gocui
 The following options can be passed to any command:
   --help        for more information about x-tracer!
   --version     version

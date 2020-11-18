@@ -4,7 +4,6 @@ import (
 	"context"
 	pb "github.com/Sheenam3/x-tracer-gocui/api"
 	pp "github.com/Sheenam3/x-tracer-gocui/parse/probeparser"
-	//	"github.com/Sheenam3/x-tracer-gocui/events"
 	"fmt"
 	"google.golang.org/grpc"
 	"log"
@@ -19,7 +18,6 @@ type StreamClient struct {
 var (
 	client pb.SentLogClient
 	Integ  bool
-	//ctx	context.Background()
 )
 
 func New(servicePort string, masterIp string) *StreamClient {
@@ -28,7 +26,7 @@ func New(servicePort string, masterIp string) *StreamClient {
 		masterIp}
 }
 
-func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[]pp.Log) {
+func (c *StreamClient) StartClient(probename []string, pidList [][]string) {
 
 	connect, err := grpc.Dial(c.ip+":"+c.port, grpc.WithInsecure())
 	if err != nil {
@@ -38,7 +36,6 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 	defer connect.Close()
 
 	client = pb.NewSentLogClient(connect)
-	//ctx, _ = context.WithCancel(context.TODO())
 
 	if len(probename) > 3 {
 
@@ -51,17 +48,6 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 
 			for val := range logtcpconnect {
 
-				/*for j := range pidList {
-				for k := range pidList[j] {
-					if strconv.FormatUint(uint64(val.Pid), 10) == pidList[j][k] {*/
-				//log.Printf("PID: %d", pidList[j][k])
-				//str_pid := strconv.FormatInt(val.Pid, 10)
-				/*						events.PublishEvent("log:send", events.SendLogEvent{Pid: val.Pid,
-				ProbeName: val.Probe,
-				Log: val.Fulllog,
-				TimeStamp: "TimeStamp",
-				})*/
-				//Pid := strconv.FormatUint(uint64(val.Pid))
 				err = c.startLogStream(client, &pb.Log{
 					Pid:       1234,
 					ProbeName: val.Probe,
@@ -71,10 +57,6 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 				if err != nil {
 					log.Fatalf("startLogStream fail.err: %v", err)
 				}
-
-				//}
-				//}
-				//}
 			}
 
 		}()
@@ -121,7 +103,6 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 		logtcplife := make(chan pp.Log, 1)
 		go pp.RunTcplife(probename[3], logtcplife, pidList[0][0])
 		go func() {
-			fmt.Println("okhai")
 			for val := range logtcplife {
 				err = c.startLogStream(client, &pb.Log{
 					Pid:       1234,
@@ -204,17 +185,6 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 
 			for val := range logtcpconnect {
 
-				/*for j := range pidList {
-				for k := range pidList[j] {
-					if strconv.FormatUint(uint64(val.Pid), 10) == pidList[j][k] {*/
-				//log.Printf("PID: %d", pidList[j][k])
-				//str_pid := strconv.FormatInt(val.Pid, 10)
-				/*						events.PublishEvent("log:send", events.SendLogEvent{Pid: val.Pid,
-				ProbeName: val.Probe,
-				Log: val.Fulllog,
-				TimeStamp: "TimeStamp",
-				})*/
-				//Pid := strconv.FormatUint(uint64(val.Pid))
 				err = c.startLogStream(client, &pb.Log{
 					Pid:       1234,
 					ProbeName: val.Probe,
@@ -224,10 +194,6 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) { //[
 				if err != nil {
 					log.Fatalf("startLogStream fail.err: %v", err)
 				}
-
-				//}
-				//}
-				//}
 			}
 
 		}()

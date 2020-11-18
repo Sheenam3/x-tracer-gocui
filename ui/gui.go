@@ -9,7 +9,6 @@ import (
 	"os"
 	"strings"
 	"time"
-	//	"github.com/sheenam3/x-tracer/pkg/streamserver"
 	"github.com/Sheenam3/x-tracer-gocui/internal/agentmanager"
 
 	"github.com/jroimartin/gocui"
@@ -33,14 +32,11 @@ var NAMESPACE string = "default"
 var keys []Key = []Key{
 	{"", gocui.KeyCtrlC, actionGlobalQuit},
 	{"logs", gocui.KeyCtrlP, actionViewProbesList},
-	//	Key{"", gocui.KeyCtrlD, actionGlobalToggleViewDebug},
 	{"pods", gocui.KeyCtrlN, actionGlobalToggleViewNamespaces},
 	{"pods", gocui.KeyArrowUp, actionViewPodsUp},
 	{"pods", gocui.KeyArrowDown, actionViewPodsDown},
 	{"pods", 'd', actionViewPodsDelete},
 	{"pods", gocui.KeyEnter, actionViewPodsSelect},
-	//Key{"logs", l, actionStreamLogs},
-	//	Key{"logs", 'l', actionViewPodsLogsHide},
 	{"logs", gocui.KeyArrowUp, actionViewPodsLogsUp},
 	{"logs", gocui.KeyArrowDown, actionViewPodsLogsDown},
 	{"namespaces", gocui.KeyArrowUp, actionViewNamespacesUp},
@@ -95,8 +91,6 @@ func InitGui() {
 // Define the UI layout
 func uiLayout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
-
-	//viewDebug(g, maxX, maxY)
 	viewLogs(g, maxX, maxY)
 	viewTcpLogs(g, maxX, maxY)
 	viewTcpLifeLogs(g, maxX, maxY)
@@ -111,17 +105,6 @@ func uiLayout(g *gocui.Gui) error {
 
 	return nil
 }
-
-/* Useful to debug Pody (display with CTRL+D)
-func debug(g *gocui.Gui, output interface{}) {
-	v, err := g.View("debug")
-	if err == nil {
-		t := time.Now()
-		tf := t.Format("2006-01-02 15:04:05")
-		output = tf + " > " + output.(string)
-		fmt.Fprintln(v, output)
-	}
-}*/
 
 // Move view cursor to the bottom
 func moveViewCursorDown(g *gocui.Gui, v *gocui.View, allowEmpty bool) error {
@@ -253,18 +236,11 @@ func showViewPodsLogs(g *gocui.Gui) (*gocui.Gui, string, io.Writer) {
 		}
 
 		// Display pod containers
-		/*vLc, err := g.View(vn + "-containers")
-		if err != nil {
-			return err
-		}
-		vLc.Clear()*/
 		var conName []string
 		for _, c := range getPodContainersName(p) {
 			//fmt.Fprintln(vLc, c)
 			conName = append(conName, c)
 		}
-		//vLc.SetCursor(0, 0)
-
 		//Display Container IDs
 
 		lv, err := g.View(vn)
@@ -282,16 +258,8 @@ func showViewPodsLogs(g *gocui.Gui) (*gocui.Gui, string, io.Writer) {
 
 		return g, p, lv
 
-		//		startAgent(g,p,lv)
-
-		// Display logs
-		//refreshPodsLogs(g)
 	}
 
-	//	debug(g, "Action: Show view logs")
-	//g.SetViewOnTop(vn)
-	//g.SetViewOnTop(vn + "-containers")
-	//g.SetCurrentView(vn)
 
 	return nil, "ok", nil
 }
@@ -393,16 +361,9 @@ func hideConfirmation(g *gocui.Gui) {
 }
 
 func startAgent(g *gocui.Gui, p string, o io.Writer, probes string) error {
-	//vn := "logs"
 	cs := getClientSet()
 	var containerId []string
 
-	/*lv, err := g.View(vn)
-	  if err != nil {
-	        return err
-	  }*/
-
-	//lv.Clear()
 
 	containerId = getPodContainersID(p)
 
@@ -431,7 +392,6 @@ func startAgent(g *gocui.Gui, p string, o io.Writer, probes string) error {
 		tcppn := strings.Join(pn, ",")
 		agent := agentmanager.New(containerId[0], targetNode, nodeIp, cs, tcppn)
 
-		//Start x-agent Pod
 		fmt.Fprintln(o, "Starting x-agent Pod...")
 
 		agent.ApplyAgentPod()

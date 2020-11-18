@@ -1,7 +1,6 @@
 package agentmanager
 
 import (
-	//	"fmt"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -197,7 +196,6 @@ func (a *agent) ApplyAgentService() {
 func (a *agent) SetupCloseHandler() {
 	c := make(chan os.Signal, 2)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	//C = make(chan bool)
 	go func() {
 		<-c
 		_ = a.clientSet.CoreV1().Pods(podObj.Namespace).Delete(podObj.Name, &metav1.DeleteOptions{})

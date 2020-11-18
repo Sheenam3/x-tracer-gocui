@@ -2,8 +2,6 @@ package events
 
 import (
 	"io"
-
-	//	"log"
 	"os"
 	"sync"
 	"time"
@@ -43,15 +41,6 @@ func notify(t EventType, e Event) {
 
 func PublishEvent(t EventType, e Event) {
 	rm.RLock()
-
-	/*	select {
-		case eventsChan <- struct {
-			Event
-			EventType
-		}{Event: e, EventType: t}:
-		default:
-			log.Panic("can't publish to chan")
-		}*/
 
 	go func() {
 
