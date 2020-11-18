@@ -13,7 +13,7 @@ type config struct {
 	setup      bool
 	askVersion bool
 	askHelp    bool
-	debug 	   bool
+	debug      bool
 }
 
 // Check if configuration is initialized

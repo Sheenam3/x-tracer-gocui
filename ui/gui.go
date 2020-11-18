@@ -1,20 +1,18 @@
 package ui
 
-
 import (
-	"fmt"
 	"context"
+	"fmt"
+	pb "github.com/Sheenam3/x-tracer-gocui/api"
+	"io"
 	"log"
 	"os"
-	"io"
 	"strings"
 	"time"
-	pb "github.com/Sheenam3/x-tracer-gocui/api"
-//	"github.com/sheenam3/x-tracer/pkg/streamserver"
+	//	"github.com/sheenam3/x-tracer/pkg/streamserver"
 	"github.com/Sheenam3/x-tracer-gocui/internal/agentmanager"
 
 	"github.com/jroimartin/gocui"
-
 )
 
 type server struct{}
@@ -23,39 +21,34 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
 }
 
-
 var (
-	g	*gocui.Gui
+	g *gocui.Gui
 )
-
-
 
 var version = "master"
 var LOG_MOD string = "pod"
 var NAMESPACE string = "default"
 
-
 // Configure globale keys
 var keys []Key = []Key{
-	Key{"", gocui.KeyCtrlC, actionGlobalQuit},
-	Key{"logs", gocui.KeyCtrlP, actionViewProbesList},
-//	Key{"", gocui.KeyCtrlD, actionGlobalToggleViewDebug},
-	Key{"pods", gocui.KeyCtrlN, actionGlobalToggleViewNamespaces},
-	Key{"pods", gocui.KeyArrowUp, actionViewPodsUp},
-	Key{"pods", gocui.KeyArrowDown, actionViewPodsDown},
-	Key{"pods", 'd', actionViewPodsDelete},
-	Key{"pods", gocui.KeyEnter, actionViewPodsSelect},
+	{"", gocui.KeyCtrlC, actionGlobalQuit},
+	{"logs", gocui.KeyCtrlP, actionViewProbesList},
+	//	Key{"", gocui.KeyCtrlD, actionGlobalToggleViewDebug},
+	{"pods", gocui.KeyCtrlN, actionGlobalToggleViewNamespaces},
+	{"pods", gocui.KeyArrowUp, actionViewPodsUp},
+	{"pods", gocui.KeyArrowDown, actionViewPodsDown},
+	{"pods", 'd', actionViewPodsDelete},
+	{"pods", gocui.KeyEnter, actionViewPodsSelect},
 	//Key{"logs", l, actionStreamLogs},
-//	Key{"logs", 'l', actionViewPodsLogsHide},
-	Key{"logs", gocui.KeyArrowUp, actionViewPodsLogsUp},
-	Key{"logs", gocui.KeyArrowDown,actionViewPodsLogsDown},
-	Key{"namespaces", gocui.KeyArrowUp, actionViewNamespacesUp},
-	Key{"namespaces", gocui.KeyArrowDown, actionViewNamespacesDown},
-	Key{"namespaces", gocui.KeyEnter, actionViewNamespacesSelect},
-	Key{"probes", gocui.KeyArrowUp, actionViewNamespacesUp},
-	Key{"probes", gocui.KeyArrowDown, actionViewNamespacesDown},
-	Key{"probes", gocui.KeyEnter, actionViewProbesSelect},
-
+	//	Key{"logs", 'l', actionViewPodsLogsHide},
+	{"logs", gocui.KeyArrowUp, actionViewPodsLogsUp},
+	{"logs", gocui.KeyArrowDown, actionViewPodsLogsDown},
+	{"namespaces", gocui.KeyArrowUp, actionViewNamespacesUp},
+	{"namespaces", gocui.KeyArrowDown, actionViewNamespacesDown},
+	{"namespaces", gocui.KeyEnter, actionViewNamespacesSelect},
+	{"probes", gocui.KeyArrowUp, actionViewNamespacesUp},
+	{"probes", gocui.KeyArrowDown, actionViewNamespacesDown},
+	{"probes", gocui.KeyEnter, actionViewProbesSelect},
 }
 
 // Entry Point of the x-tracer
@@ -98,8 +91,6 @@ func InitGui() {
 		log.Panicln(err)
 	}
 }
-
-
 
 // Define the UI layout
 func uiLayout(g *gocui.Gui) error {
@@ -207,9 +198,6 @@ func setViewCursorToLine(g *gocui.Gui, v *gocui.View, lines []string, selLine st
 	return nil
 }
 
-
-
-
 // Get pod name form line
 func getPodNameFromLine(line string) string {
 	if line == "" {
@@ -239,27 +227,25 @@ func getSelectedPod(g *gocui.Gui) (string, error) {
 	return p, nil
 }
 
-
-
 func showSelectProbe(g *gocui.Gui) error {
-	
 
 	switch LOG_MOD {
 	case "pod":
 		//Choose probe tool
 		g.SetViewOnTop("probes")
 		g.SetCurrentView("probes")
-		changeStatusContext(g,"SE")
+		changeStatusContext(g, "SE")
 	}
 	return nil
 }
+
 // Show views logs
-func showViewPodsLogs(g *gocui.Gui) (*gocui.Gui,string,io.Writer) {
+func showViewPodsLogs(g *gocui.Gui) (*gocui.Gui, string, io.Writer) {
 	vn := "logs"
 
 	switch LOG_MOD {
 
-	case "probe":	
+	case "probe":
 		// Get current selected pod
 		p, err := getSelectedPod(g)
 		if err != nil {
@@ -281,35 +267,33 @@ func showViewPodsLogs(g *gocui.Gui) (*gocui.Gui,string,io.Writer) {
 
 		//Display Container IDs
 
-                lv, err := g.View(vn)
-                if err != nil {
-                        fmt.Println(err)
-                }
-                lv.Clear()
+		lv, err := g.View(vn)
+		if err != nil {
+			fmt.Println(err)
+		}
+		lv.Clear()
 
-                fmt.Fprintln(lv, "Containers ID:")
-                for i, conId := range getPodContainersID(p){
-                        fmt.Fprintln(lv,conName[i] + "->" + conId)
+		fmt.Fprintln(lv, "Containers ID:")
+		for i, conId := range getPodContainersID(p) {
+			fmt.Fprintln(lv, conName[i]+"->"+conId)
 		}
 
-		fmt.Fprintln(lv, "Pod you choose is: " + p)
+		fmt.Fprintln(lv, "Pod you choose is: "+p)
 
-		return g,p,lv
-	
-//		startAgent(g,p,lv)
-		
-		
+		return g, p, lv
+
+		//		startAgent(g,p,lv)
+
 		// Display logs
 		//refreshPodsLogs(g)
 	}
 
-
-//	debug(g, "Action: Show view logs")
+	//	debug(g, "Action: Show view logs")
 	//g.SetViewOnTop(vn)
 	//g.SetViewOnTop(vn + "-containers")
 	//g.SetCurrentView(vn)
 
-	return nil,"ok",nil
+	return nil, "ok", nil
 }
 
 // Refresh pods logs
@@ -408,21 +392,17 @@ func hideConfirmation(g *gocui.Gui) {
 	g.DeleteView("confirmation")
 }
 
-
-
-
-
 func startAgent(g *gocui.Gui, p string, o io.Writer, probes string) error {
 	//vn := "logs"
 	cs := getClientSet()
 	var containerId []string
 
 	/*lv, err := g.View(vn)
-        if err != nil {
-              return err
-        }*/
+	  if err != nil {
+	        return err
+	  }*/
 
-        //lv.Clear()
+	//lv.Clear()
 
 	containerId = getPodContainersID(p)
 
@@ -430,7 +410,7 @@ func startAgent(g *gocui.Gui, p string, o io.Writer, probes string) error {
 
 	nodeIp := getNodeIp()
 
-	if probes == "All Probes"{
+	if probes == "All Probes" {
 
 		pn := getProbeNames()
 		allpn := strings.Join(pn, ",")
@@ -446,25 +426,22 @@ func startAgent(g *gocui.Gui, p string, o io.Writer, probes string) error {
 
 		agent.SetupCloseHandler()
 
-
-	}else if probes == "All TCP Probes"{
+	} else if probes == "All TCP Probes" {
 		pn := getTcpProbeNames()
 		tcppn := strings.Join(pn, ",")
 		agent := agentmanager.New(containerId[0], targetNode, nodeIp, cs, tcppn)
 
-                //Start x-agent Pod
-                fmt.Fprintln(o, "Starting x-agent Pod...")
+		//Start x-agent Pod
+		fmt.Fprintln(o, "Starting x-agent Pod...")
 
-                agent.ApplyAgentPod()
+		agent.ApplyAgentPod()
 
-                fmt.Fprintln(o, "Starting x-agent Service...")
-                agent.ApplyAgentService()
+		fmt.Fprintln(o, "Starting x-agent Service...")
+		agent.ApplyAgentService()
 
-                agent.SetupCloseHandler()
+		agent.SetupCloseHandler()
 
-
-
-	}else{
+	} else {
 		agent := agentmanager.New(containerId[0], targetNode, nodeIp, cs, probes)
 
 		//Start x-agent Pod
@@ -477,20 +454,14 @@ func startAgent(g *gocui.Gui, p string, o io.Writer, probes string) error {
 
 		agent.SetupCloseHandler()
 
-
 	}
-
 
 	return nil
 }
 
+func getTcpProbeNames() []string {
 
-
-
-func getTcpProbeNames() []string{
-
-        pn := []string {"tcptracer", "tcpconnect", "tcpaccept"}
-        return pn
-
+	pn := []string{"tcptracer", "tcpconnect", "tcpaccept"}
+	return pn
 
 }

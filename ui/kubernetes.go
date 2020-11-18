@@ -3,23 +3,21 @@ package ui
 import (
 	"fmt"
 	"io"
-	"os"
-	"strconv"
-	"time"
-	"reflect"
-	"strings"
-	"regexp"
-	"log"
+	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/kubectl/pkg/describe"
 	"k8s.io/kubectl/pkg/describe/versioned"
-	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
+	"log"
+	"os"
+	"reflect"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
-
 
 // Get Kubernetes client set
 func getClientSet() *kubernetes.Clientset {
@@ -42,16 +40,12 @@ func getClientSet() *kubernetes.Clientset {
 	return cs
 }
 
-
-
 //Get Field String
 func getFieldString(e *v1.ContainerStatus, field string) string {
-        r := reflect.ValueOf(e)
-        f := reflect.Indirect(r).FieldByName(field)
-        return f.String()
+	r := reflect.ValueOf(e)
+	f := reflect.Indirect(r).FieldByName(field)
+	return f.String()
 }
-
-
 
 // Get pods (use namespace)
 func getPods() (*v1.PodList, error) {
@@ -80,23 +74,20 @@ func getPodContainersName(p string) []string {
 	return pc
 }
 
-
-
 //Get Pod container ID
 func getPodContainersID(p string) []string {
-        cs := getClientSet()
-        var id []string
-        podObj, _ := cs.CoreV1().Pods(NAMESPACE).Get(p, metav1.GetOptions{})
+	cs := getClientSet()
+	var id []string
+	podObj, _ := cs.CoreV1().Pods(NAMESPACE).Get(p, metav1.GetOptions{})
 
-        var conId string
-               for c := range podObj.Status.ContainerStatuses {
-                       conId = getFieldString(&podObj.Status.ContainerStatuses[c], "ContainerID")
-                       conId = strings.SplitAfter(conId, "://")[1]
-                       id = append(id, conId)
-               }
-        return id
+	var conId string
+	for c := range podObj.Status.ContainerStatuses {
+		conId = getFieldString(&podObj.Status.ContainerStatuses[c], "ContainerID")
+		conId = strings.SplitAfter(conId, "://")[1]
+		id = append(id, conId)
+	}
+	return id
 }
-
 
 // Delete pod
 func deletePod(p string) error {
@@ -129,75 +120,67 @@ func getPodContainerLogs(p string, c string, o io.Writer) error {
 	return err
 }
 
-
-
 func getTargetNode(p string) string {
 
 	cs := getClientSet()
-        podObj, _ := cs.CoreV1().Pods(NAMESPACE).Get(p, metav1.GetOptions{})
+	podObj, _ := cs.CoreV1().Pods(NAMESPACE).Get(p, metav1.GetOptions{})
 	podDesc := versioned.PodDescriber{Interface: cs}
 	descStr, err := podDesc.Describe(podObj.Namespace, podObj.Name, describe.DescriberSettings{ShowEvents: false})
 	if err != nil {
 		log.Println(err)
-        }
+	}
 
 	descStr = strings.SplitAfter(descStr, "Node:")[1]
 	descStr = strings.Split(descStr, "/")[0]
 	reg := regexp.MustCompile("[^\\s]+")
 	targetNode := reg.FindAllString(descStr, 1)[0]
-	
+
 	return targetNode
 
-
 }
-
-
 
 func getNodeIp() string {
 
-        var currentNode *v1.Node
-        var err error
-        cs := getClientSet()
-        c := getConfig()
+	var currentNode *v1.Node
+	var err error
+	cs := getClientSet()
+	c := getConfig()
 
-        if c.debug {
-                currentNode, err = cs.CoreV1().Nodes().Get("kind-control-plane", metav1.GetOptions{})
-                if err != nil {
-                log.Println(err)
-                }
+	if c.debug {
+		currentNode, err = cs.CoreV1().Nodes().Get("kind-control-plane", metav1.GetOptions{})
+		if err != nil {
+			log.Println(err)
+		}
 
-        } else {
-                currentNode, err = cs.CoreV1().Nodes().Get(getHostName(), metav1.GetOptions{})
-                /*if err != nil {
-                log.Println(err)
-                }*/
+	} else {
+		currentNode, err = cs.CoreV1().Nodes().Get(getHostName(), metav1.GetOptions{})
+		/*if err != nil {
+		  log.Println(err)
+		  }*/
 
-        }
+	}
 
-        if currentNode == nil {
-                panic("current node can not be nil")
-        }
+	if currentNode == nil {
+		panic("current node can not be nil")
+	}
 
-        nodeIp := strings.Split(currentNode.Status.Addresses[0].Address, " ")[0]
+	nodeIp := strings.Split(currentNode.Status.Addresses[0].Address, " ")[0]
 
-        return nodeIp
+	return nodeIp
 
 }
-
 
 //Get host name on which x-tracer is running
 func getHostName() string {
 
+	name, err := os.Hostname()
+	if err != nil {
+		panic(err)
+	}
 
-        name, err := os.Hostname()
-        if err != nil {
-                panic(err)
-        }
-
-//        fmt.Fprintln(lv,"Hostname : " + name)
-        return name
+	//        fmt.Fprintln(lv,"Hostname : " + name)
+	return name
 }
-
 
 // Column helper: Restarts
 func columnHelperRestarts(cs []v1.ContainerStatus) string {
