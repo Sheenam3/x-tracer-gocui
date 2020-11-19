@@ -15,11 +15,11 @@ Currently, x-tracer includes 7 ebp tools(BCC),probes to trace the process events
   
 ## Architecture
 
-[Architecture](https://github.com/Sheenam3/x-tracer-gocui/docs/Architecture.md)
+[Architecture](docs/Architecture.md)
 
 ## Installation Steps
 
-[Installation](https://github.com//Sheenam3/x-tracer-gocui/docs/x-tracer-installation)
+[Installation](docs/x-tracer-installation)
 
 
 
