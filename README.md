@@ -19,7 +19,7 @@ Currently, x-tracer includes 7 ebp tools(BCC),probes to trace the process events
 
 ## Installation Steps
 
-[Installation](docs/x-tracer-installation)
+[Installation](docs/x-tracer-installation.md)
 
 
 
