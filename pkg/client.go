@@ -242,7 +242,7 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) {
 		switch probename[0] {
 
 		case "tcptracer":
-
+			Integ = false
 			logtcptracer := make(chan pp.Log, 1)
 			go pp.RunTcptracer(probename[0], logtcptracer, pidList[0][0])
 			go func() {
@@ -264,6 +264,7 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) {
 			}()
 
 		case "tcpconnect":
+			Integ = false
 			logtcpconnect := make(chan pp.Log, 1)
 
 			go pp.RunTcpconnect(probename[0], logtcpconnect, pidList[0][0])
@@ -287,7 +288,7 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) {
 			}()
 
 		case "tcpaccept":
-
+			Integ = false
 			logtcpaccept := make(chan pp.Log, 1)
 			go pp.RunTcpaccept(probename[0], logtcpaccept, pidList[0][0])
 			go func() {
@@ -308,7 +309,7 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) {
 			}()
 
 		case "tcplife":
-
+			Integ = false
 			logtcplife := make(chan pp.Log, 1)
 			go pp.RunTcplife(probename[0], logtcplife, pidList[0][0])
 			go func() {
@@ -330,7 +331,7 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) {
 			}()
 
 		case "execsnoop":
-
+			Integ = false
 			logexecsnoop := make(chan pp.Log, 1)
 			go pp.RunExecsnoop(probename[0], logexecsnoop, pidList[0][0])
 			go func() {
@@ -351,7 +352,7 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) {
 
 			}()
 		case "biosnoop":
-
+			Integ = false
 			logbiosnoop := make(chan pp.Log, 1)
 			go pp.RunBiosnoop(probename[0], logbiosnoop, pidList[0][0])
 			go func() {
@@ -372,7 +373,7 @@ func (c *StreamClient) StartClient(probename []string, pidList [][]string) {
 
 			}()
 		case "cachestat":
-
+			Integ = false
 			logcachetop := make(chan pp.Log, 1)
 			go pp.RunCachetop(probename[0], logcachetop, pidList[0][0])
 			go func() {

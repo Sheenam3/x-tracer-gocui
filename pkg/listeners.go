@@ -28,7 +28,7 @@ func receiveLog(e events.Event) {
 			os.Exit(1)
 		}
 
-		if Integ == true {
+		if Integ == false {
 
 			events.PublishEvent("logs:refreshsingle", events.EmptyMessage{Pn: e.ProbeName})
 
@@ -64,7 +64,7 @@ func tcplifeLog(e events.Event) {
 			os.Exit(1)
 		}
 
-		if Integ == true {
+		if Integ == false {
 
 			events.PublishEvent("logs:refreshsingle", events.EmptyMessage{Pn: e.ProbeName})
 
@@ -97,7 +97,7 @@ func execsnoopLog(e events.Event) {
 			os.Exit(1)
 		}
 
-		if Integ == true {
+		if Integ == false {
 
 			events.PublishEvent("logs:refreshsingle", events.EmptyMessage{Pn: e.ProbeName})
 
@@ -131,7 +131,7 @@ func biosnoopLog(e events.Event) {
 
 			os.Exit(1)
 		}
-		if Integ == true {
+		if Integ == false {
 
 			events.PublishEvent("logs:refreshsingle", events.EmptyMessage{Pn: e.ProbeName})
 
@@ -165,7 +165,7 @@ func cachestatLog(e events.Event) {
 
 			os.Exit(1)
 		}
-		if Integ == true {
+		if Integ == false {
 
 			events.PublishEvent("logs:refreshsingle", events.EmptyMessage{Pn: e.ProbeName})
 
