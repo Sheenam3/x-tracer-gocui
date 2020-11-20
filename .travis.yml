@@ -7,11 +7,11 @@ services:
 script:
   - 'make tracer'
   - 'make agent'
-  - 'make build-image'
+  - 'make release'
 
 after_success:
   - docker login -u "$DOCKER_UN" -p "$DOCKER_PSWD" ;
-    make push-image ;
+    make publish ;
     
 notifications:
   email: false
